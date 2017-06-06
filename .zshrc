@@ -67,6 +67,7 @@ source $ZSH/oh-my-zsh.sh
 # else
 #   export EDITOR='mvim'
 # fi
+export EDITOR='vim'
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -86,4 +87,7 @@ alias vpn='/opt/cisco/anyconnect/bin/vpn'
 alias vpnui='/opt/cisco/anyconnect/bin/vpnui'
 alias chrome='google-chrome'
 alias c='clear'
-alias ls='ls -1'
+alias targz='tar -xvzf'
+alias arduino='./../../opt/arduino-1.8.1/arduino'
+alias g='git'
+alias py='python3'

@@ -15,12 +15,13 @@ Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 
 Plugin 'altercation/vim-colors-solarized'
-Plugin 'scrooloose/syntastic'
+Plugin 'vim-syntastic/syntastic'
 Plugin 'vim-scripts/indentpython.vim'
 Plugin 'nvie/vim-flake8'
 Plugin 'tmhedberg/SimpylFold'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'Valloric/YouCompleteMe'
+Plugin 'lervag/vimtex' " maybe install this later
 
 " TO INSTALL, RUN `:PluginInstall`
 
@@ -90,6 +91,7 @@ set softtabstop=4
 set ai
 set si
 set wrap " wrap lines
+set textwidth=80
 
 au BufNewFile,BufRead *.py
     \ set tabstop=4 |
@@ -110,6 +112,9 @@ au BufNewFile,BufRead *.js,*.html,*.css
 " Some python and syntax checking thing
 let python_highlight_all=1
 syntax on
+
+"let g:syntastic_python_checkers=['python', 'python3']
+let g:syntastic_python_python_exec = 'python3'
 
 "define BadWhitespace before using in a match
 highlight BadWhitespace ctermbg=red guibg=darkred
