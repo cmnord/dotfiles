@@ -21,7 +21,8 @@ Plugin 'nvie/vim-flake8'
 Plugin 'tmhedberg/SimpylFold'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'Valloric/YouCompleteMe'
-Plugin 'lervag/vimtex' " maybe install this later
+Plugin 'kchmck/vim-coffee-script'
+Plugin 'ConradIrwin/vim-bracketed-paste'
 
 " TO INSTALL, RUN `:PluginInstall`
 
@@ -67,10 +68,10 @@ syntax enable
 
 if has('gui_running')
     set background=light
-    colorscheme solarized
+    colorscheme desert
 else
     set background=light
-    colorscheme solarized " used to be inkpot
+    colorscheme desert " used to be inkpot
 endif
 
 let g:solarized_termtrans = 1
@@ -151,6 +152,18 @@ set foldlevel=99
 nnoremap <space> za
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" MAPPINGS
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Remap vim 0 to first non-blank character
+map 0 ^
+
+" Use hjkl!!
+noremap <Up> <NOP>
+noremap <Down> <NOP>
+noremap <Left> <NOP>
+noremap <Right> <NOP>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MAGIC (I don't really know what these do)
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if has("gui_running")
@@ -159,10 +172,6 @@ if has("gui_running")
     set t_Co=256
     set guitablabel=%M\ %t
 endif
-
-" Editing mappings
-" Remap vim 0 to first non-blank character
-map 0 ^
 
 " Delete trailing whitespace on save
 func! DeleteTrailingWS()
