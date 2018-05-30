@@ -1,4 +1,5 @@
 [alias]
+cl = clone
 co = checkout
 br = branch
 cm = commit
