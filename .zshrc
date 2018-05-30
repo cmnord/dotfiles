@@ -5,7 +5,7 @@
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="sorin" # formerly "sorin"
+ZSH_THEME="sorin"
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -86,16 +86,7 @@ export EDITOR='vim'
 alias vpn='/opt/cisco/anyconnect/bin/vpn'
 alias vpnui='/opt/cisco/anyconnect/bin/vpnui'
 alias chrome='google-chrome'
-alias c='clear'
 alias targz='tar -xvzf'
 alias arduino='./../../opt/arduino-1.8.1/arduino'
 alias g='git'
-alias gcl='git clone'
-alias gp='git pull'
-alias gpo='git pull origin'
-alias ga='git add'
-alias gc='git commit'
-alias gch='git checkout'
-alias gst='git status'
-alias gdi='git diff'
 alias py='python3'
