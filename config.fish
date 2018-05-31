@@ -7,3 +7,7 @@ set -q XDG_DATA_HOME
 source $OMF_PATH/init.fish
 
 eval (python -m virtualfish)
+
+function sudo!!
+    eval sudo $history[1]
+end
