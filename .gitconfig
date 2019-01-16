@@ -1,21 +1,15 @@
 [alias]
-cl = clone
-co = checkout
 br = branch
+cl = clone
 cm = commit
-st = status
-rb = rebase
-push--fwl = push --force-with-lease
-llog = log --date=local
-flog = log --pretty=fuller --decorate
+co = checkout
+ds = diff --staged
 lol = log --graph --decorate --oneline
 lola = log --graph --decorate --oneline --all
-blog = log origin/master... --left-right
-ds = diff --staged
-fixup = commit --fixup
-squash = commit --squash
-unstage = reset HEAD
-rum = rebase master@{u}
+pfwl = push --force-with-lease
+pom = pull origin master
+rb = rebase
+st = status
 
 [core]
 editor = vim
@@ -27,6 +21,8 @@ branch = auto
 interactive = auto
 status = auto
 
+[pull]
+rebase = true
 [push]
 default = simple
 [color "diff"]
