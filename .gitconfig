@@ -2,6 +2,8 @@
 br = branch
 cl = clone
 cm = commit
+cmm = commit -m
+cma = commit --amend
 co = checkout
 ds = diff --staged
 lol = log --graph --decorate --oneline
@@ -9,6 +11,7 @@ lola = log --graph --decorate --oneline --all
 pfwl = push --force-with-lease
 pom = pull origin master
 rb = rebase
+rbc = rebase --continue
 st = status
 
 [core]
