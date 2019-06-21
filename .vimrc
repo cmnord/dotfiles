@@ -18,10 +18,8 @@ Plugin 'altercation/vim-colors-solarized'
 Plugin 'vim-syntastic/syntastic'
 Plugin 'vim-scripts/indentpython.vim'
 Plugin 'nvie/vim-flake8'
-Plugin 'tmhedberg/SimpylFold'
 Plugin 'editorconfig/editorconfig-vim'
 Plugin 'kchmck/vim-coffee-script'
-Plugin 'ConradIrwin/vim-bracketed-paste'
 
 " TO INSTALL, RUN `:PluginInstall`
 
@@ -42,18 +40,11 @@ set noswapfile
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " USABILITY
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Enable pasting
-setlocal paste!
-
-" Fix backspace
-set backspace=eol,start,indent
-set whichwrap+=<,>,h,l
 
 set number
 set cursorline
 set wildmenu
 set ruler
-set cmdheight=2
 
 set lbr " line break
 set tw=500
@@ -140,15 +131,6 @@ set smartcase
 " Search - highlight and fancy
 set hls
 set incsearch
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" FOLDING
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Enable folding
-set foldmethod=indent
-set foldlevel=99
-" Enable folding with space
-nnoremap <space> za
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MAPPINGS
