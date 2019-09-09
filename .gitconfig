@@ -12,6 +12,7 @@ pfwl = push --force-with-lease
 pom = pull origin master
 rb = rebase
 rbc = rebase --continue
+rbi = rebase --interactive
 st = status
 
 [core]
