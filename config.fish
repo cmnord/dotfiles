@@ -9,7 +9,15 @@ source $OMF_PATH/init.fish
 eval (python -m virtualfish)
 alias python "python3"
 alias pip "pip3"
+alias py "python"
 
 function sudo!!
     eval sudo $history[1]
 end
+
+set -gx PATH (go env GOPATH)/bin $PATH
+set -gx PATH $HOME/.cargo/bin $PATH
+set -gx PATH /usr/local/opt/riscv-gnu-toolchain/bin $PATH
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/clairenord/Downloads/google-cloud-sdk/path.fish.inc' ]; . '/Users/clairenord/Downloads/google-cloud-sdk/path.fish.inc'; end
