@@ -50,15 +50,13 @@ set mouse=a " Use mouse to scroll, select, etc.
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " COLOR
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Use syntax highlighting
 syntax enable
+set background=light
+colorscheme solarized
 
-if has('gui_running')
-    set background=light
-    colorscheme desert
-else
-    set background=light
-    colorscheme desert " used to be inkpot
-endif
+" Some python thing
+let python_highlight_all=1
 
 let g:solarized_termtrans = 1
 
@@ -100,12 +98,6 @@ au BufNewFile,BufRead *.js,*.html,*.css
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " SYNTAX
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Some python and syntax checking thing
-let python_highlight_all=1
-syntax on
-
-"let g:syntastic_python_checkers=['python', 'python3']
-let g:syntastic_python_python_exec = 'python3'
 
 "define BadWhitespace before using in a match
 highlight BadWhitespace ctermbg=red guibg=darkred
@@ -135,9 +127,6 @@ set incsearch
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " MAPPINGS
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Remap vim 0 to first non-blank character
-map 0 ^
-
 " Delete trailing whitespace on save
 func! DeleteTrailingWS()
     exe "normal mz"
