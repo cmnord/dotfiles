@@ -11,15 +11,11 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 
 " Markdown stuff
-Plugin 'godlygeek/tabular'
-Plugin 'plasticboy/vim-markdown'
-
+Plugin 'rust-lang/rust.vim'
+Plugin 'airblade/vim-gitgutter'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 Plugin 'altercation/vim-colors-solarized'
-Plugin 'vim-syntastic/syntastic'
-Plugin 'vim-scripts/indentpython.vim'
-Plugin 'nvie/vim-flake8'
-Plugin 'editorconfig/editorconfig-vim'
-Plugin 'kchmck/vim-coffee-script'
 
 " TO INSTALL, RUN `:PluginInstall`
 
@@ -65,6 +61,10 @@ else
 endif
 
 let g:solarized_termtrans = 1
+
+" Airline things
+let g:airline_powerline_fonts=1
+let g:airline_theme='solarized'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " TABS AND INDENT
