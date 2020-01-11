@@ -19,6 +19,7 @@ end
 set -gx PATH (go env GOPATH)/bin $PATH
 set -gx GOPATH $PWD
 
+# Rust
 set -gx PATH $HOME/.cargo/bin $PATH
 set -gx PATH /usr/local/opt/riscv-gnu-toolchain/bin $PATH
 
