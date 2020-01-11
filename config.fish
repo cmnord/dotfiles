@@ -25,3 +25,6 @@ set -gx PATH /usr/local/opt/riscv-gnu-toolchain/bin $PATH
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/clairenord/Downloads/google-cloud-sdk/path.fish.inc' ]; . '/Users/clairenord/Downloads/google-cloud-sdk/path.fish.inc'; end
+
+# editor
+set -gx EDITOR vim
