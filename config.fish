@@ -22,10 +22,6 @@ set -gx GOPATH $PWD
 # Rust
 set -gx PATH $HOME/.cargo/bin $PATH
 
-# RISC-V
-set -gx PATH /usr/local/opt/riscv-gnu-toolchain/bin $PATH
-alias riscv64-unknown-elf-gdb "riscv64-unknown-elf-gdb --data-directory=/usr/local/opt/gdb/share/gdb/"
-
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/clairenord/Downloads/google-cloud-sdk/path.fish.inc' ]; . '/Users/clairenord/Downloads/google-cloud-sdk/path.fish.inc'; end
 
