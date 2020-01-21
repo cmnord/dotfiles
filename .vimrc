@@ -104,3 +104,6 @@ inoremap <Down>  <ESC>:echoe "Use j"<CR>
 " Airline things
 let g:airline_powerline_fonts=1
 let g:airline_theme='solarized'
+
+" Set color scheme
+colorscheme solarized
