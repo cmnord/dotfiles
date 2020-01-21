@@ -11,6 +11,9 @@ ZSH_THEME="agnoster"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 plugins=(
   git
+  history-substring-search
+  zsh-autosuggestions
+  zsh-syntax-highlighting
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -23,5 +26,4 @@ export EDITOR="vim"
 # export SSH_KEY_PATH="~/.ssh/rsa_id"
 
 # Aliases
-alias arduino="./../../opt/arduino-1.8.1/arduino"
 alias py="python3"
