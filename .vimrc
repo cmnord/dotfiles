@@ -107,3 +107,9 @@ let g:airline_theme='solarized'
 
 " Set color scheme
 colorscheme solarized
+
+" Highlight the line with the cursor on it
+set cursorline
+
+" Highlight all the search results
+set hlsearch
