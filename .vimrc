@@ -1,4 +1,13 @@
-set nocompatible              " be iMproved, required
+" Vim is based on Vi. Setting `nocompatible` switches from the default
+" Vi-compatibility mode and enables useful Vim functionality. This
+" configuration option turns out not to be necessary for the file named
+" '~/.vimrc', because Vim automatically enters nocompatible mode if that file
+" is present. But we're including it here just in case this config file is
+" loaded some other way (e.g. saved as `foo`, and then Vim started with
+" `vim -u foo`).
+set nocompatible
+
+""" VUNDLE
 filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
@@ -24,115 +33,70 @@ call vundle#end()            " required
 filetype plugin indent on    " required
 " Put your non-Plugin stuff after this line
 
-set nocompatible " ?
-set encoding=utf8
-set ffs=unix,dos,mac
+" Turn on syntax highlighting.
+syntax on
 
-" Turn off backup since stuff is in git anyway
-set nobackup
-set nowb
-set noswapfile
+" Disable the default Vim startup message.
+set shortmess+=I
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" USABILITY
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
+" Show line numbers.
 set number
-set cursorline
-set wildmenu
-set ruler
 
-set lbr " line break
-set tw=500
+" This enables relative line numbering mode. With both number and
+" relativenumber enabled, the current line shows the true line number, while
+" all other lines (above and below) are numbered relative to the current line.
+" This is useful because you can tell, at a glance, what count is needed to
+" jump up or down to a particular line, by {count}k to go up or {count}j to go
+" down.
+set relativenumber
 
-set mouse=a " Use mouse to scroll, select, etc.
+" Always show the status line at the bottom, even if you only have one window open.
+set laststatus=2
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" COLOR
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Use syntax highlighting
-syntax enable
-set background=light
-colorscheme solarized
+" The backspace key has slightly unintuitive behavior by default. For example,
+" by default, you can't backspace before the insertion point set with 'i'.
+" This configuration makes backspace behave more reasonably, in that you can
+" backspace over anything.
+set backspace=indent,eol,start
 
-" Some python thing
-let python_highlight_all=1
+" By default, Vim doesn't let you hide a buffer (i.e. have a buffer that isn't
+" shown in any window) that has unsaved changes. This is to prevent you from "
+" forgetting about unsaved changes and then quitting e.g. via `:qa!`. We find
+" hidden buffers helpful enough to disable this protection. See `:help hidden`
+" for more information on this.
+set hidden
 
-let g:solarized_termtrans = 1
-
-" Airline things
-let g:airline_powerline_fonts=1
-let g:airline_theme='solarized'
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" TABS AND INDENT
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set expandtab " spaces instead of tabs
-set smarttab
-
-" Indent automatically depending on filetype
-filetype indent on
-set autoindent
-
-set shiftwidth=4
-set tabstop=4
-set softtabstop=4
-set ai
-set si
-set wrap " wrap lines
-set textwidth=80
-
-au BufNewFile,BufRead *.py
-    \ set tabstop=4 |
-    \ set softtabstop=4 |
-    \ set shiftwidth=4 |
-    \ set textwidth=79 |
-    \ set autoindent |
-    \ set fileformat=unix |
-
-au BufNewFile,BufRead *.js,*.html,*.css
-    \ set tabstop=2 |
-    \ set tabstop=2 |
-    \ set shiftwidth=2 |
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" SYNTAX
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-"define BadWhitespace before using in a match
-highlight BadWhitespace ctermbg=red guibg=darkred
-au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
-
-" Highlight matching brackets when highlighted (blink for 2/10 of sec)
-set showmatch
-set mat=2
-
-" No sound on errors
-set noerrorbells
-set novisualbell
-set t_vb=0
-set tm=500
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" SEARCH
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Case insensitive search
-set ic
+" This setting makes search case-insensitive when all characters in the string
+" being searched are lowercase. However, the search becomes case-sensitive if
+" it contains any capital letters. This makes searching more convenient.
+set ignorecase
 set smartcase
 
-" Search - highlight and fancy
-set hls
+" Enable searching as you type, rather than waiting till you press enter.
 set incsearch
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" MAPPINGS
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Delete trailing whitespace on save
-func! DeleteTrailingWS()
-    exe "normal mz"
-    %s/\s\+$//ge
-    exe "normal`z"
-endfunc
-autocmd BufWrite *.py :call DeleteTrailingWS()
-autocmd BufWrite *.coffee :call DeleteTrailingWS()
+" Unbind some useless/annoying default key bindings.
+nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
 
+" Disable audible bell because it's annoying.
+set noerrorbells visualbell t_vb=
+
+" Enable mouse support. You should avoid relying on this too much, but it can
+" sometimes be convenient.
+set mouse+=a
+
+" Try to prevent bad habits like using the arrow keys for movement. This is
+" not the only possible bad habit. For example, holding down the h/j/k/l keys
+" for movement, rather than using more efficient movement commands, is also a
+" bad habit. The former is enforceable through a .vimrc, while we don't know
+" how to prevent the latter.
+" Do this in normal mode...
+nnoremap <Left>  :echoe "Use h"<CR>
+nnoremap <Right> :echoe "Use l"<CR>
+nnoremap <Up>    :echoe "Use k"<CR>
+nnoremap <Down>  :echoe "Use j"<CR>
+" ...and in insert mode
+inoremap <Left>  <ESC>:echoe "Use h"<CR>
+inoremap <Right> <ESC>:echoe "Use l"<CR>
+inoremap <Up>    <ESC>:echoe "Use k"<CR>
+inoremap <Down>  <ESC>:echoe "Use j"<CR>
