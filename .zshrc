@@ -27,3 +27,7 @@ export EDITOR="vim"
 
 # Aliases
 alias py="python3"
+
+# Vi mode
+bindkey -v
+export KEYTIMEOUT=1
