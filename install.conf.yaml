@@ -10,6 +10,7 @@
     ~/.tmux.conf:
     ~/.vimrc:
     ~/.zshrc:
+    ~/.inputrc:
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
