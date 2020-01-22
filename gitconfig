@@ -1,47 +1,50 @@
 [alias]
-br = branch
-cl = clone
-cm = commit
-cmm = commit -m
-cma = commit --amend
-co = checkout
-ds = diff --staged
-lol = log --graph --decorate --oneline
-lola = log --graph --decorate --oneline --all
-pfwl = push --force-with-lease
-pom = pull origin master
-rb = rebase
-rbc = rebase --continue
-rbi = rebase --interactive
-st = status
+	br = branch
+	cl = clone
+	cm = commit
+	cmm = commit -m
+	cma = commit --amend
+	co = checkout
+	ds = diff --staged
+	lol = log --graph --decorate --oneline
+	lola = log --graph --decorate --oneline --all
+	pfwl = push --force-with-lease
+	pom = pull origin master
+	rb = rebase
+	rbc = rebase --continue
+	rbi = rebase --interactive
+	st = status
 
 [core]
-editor = vim
-pager = diff-so-fancy | less --tabs=4 -RFX # need to install diff-so-fancy
+	editor = vim
+	pager = diff-so-fancy | less --tabs=4 -RFX # need to install diff-so-fancy
 
 [color]
-ui = auto
-branch = auto
-interactive = auto
-status = auto
+	ui = auto
+	branch = auto
+	interactive = auto
+	status = auto
 
 [pull]
-rebase = true
+	rebase = true
+
 [push]
-default = simple
+	default = upstream
+
 [color "diff"]
-meta = yellow bold
-commit = green bold
-frag = magenta bold
-old = red bold
-new = green bold
-whitespace = red reverse
+	meta = yellow bold
+	commit = green bold
+	frag = magenta bold
+	old = red bold
+	new = green bold
+	whitespace = red reverse
+
 [color "diff-highlight"]
-oldNormal = "red bold"
-oldHighlight = "red bold 52"
-newNormal = "green bold"
-newHighlight = "green bold 22"
+	oldNormal = "red bold"
+	oldHighlight = "red bold 52"
+	newNormal = "green bold"
+	newHighlight = "green bold 22"
 
 [user]
-email = "cnord@mit.edu"
-name = "Claire Nord"
+	email = "cnord@mit.edu"
+	name = "Claire Nord"
