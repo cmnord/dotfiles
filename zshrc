@@ -1,5 +1,9 @@
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/cnord/.oh-my-zsh"
+if [[ -n $SSH_CONNECTION ]]; then
+  export ZSH="/home/ubuntu/.oh-my-zsh"
+else
+  export ZSH="/Users/cnord/.oh-my-zsh"
+fi
 
 ZSH_THEME="agnoster"
 
