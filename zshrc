@@ -1,6 +1,6 @@
 # Path to your oh-my-zsh installation.
 if [[ -n $SSH_CONNECTION ]]; then
-  export ZSH="/home/ubuntu/.oh-my-zsh"
+  export ZSH="$HOME/.oh-my-zsh"
 else
   export ZSH="/Users/cnord/.oh-my-zsh"
 fi

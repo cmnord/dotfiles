@@ -11,6 +11,7 @@
     ~/.vimrc:
     ~/.zshrc:
     ~/.inputrc:
+    ~/.oh-my-zsh/custom/plugins: zsh-plugins
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
