@@ -8,3 +8,18 @@
 [submodule "zsh-plugins/zsh-syntax-highlighting"]
 	path = zsh-plugins/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting
+[submodule "vim/pack/vendor/start/rust.vim"]
+	path = vim/pack/vendor/start/rust.vim
+	url = https://github.com/rust-lang/rust.vim
+[submodule "vim/pack/vendor/start/vim-gitgutter"]
+	path = vim/pack/vendor/start/vim-gitgutter
+	url = https://github.com/airblade/vim-gitgutter
+[submodule "vim/pack/vendor/start/vim-airline"]
+	path = vim/pack/vendor/start/vim-airline
+	url = https://github.com/vim-airline/vim-airline
+[submodule "vim/pack/vendor/start/vim-airline-themes"]
+	path = vim/pack/vendor/start/vim-airline-themes
+	url = https://github.com/vim-airline/vim-airline-themes
+[submodule "vim/pack/vendor/start/vim-colors-solarized"]
+	path = vim/pack/vendor/start/vim-colors-solarized
+	url = https://github.com/altercation/vim-colors-solarized

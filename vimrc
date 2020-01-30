@@ -3,35 +3,9 @@
 " configuration option turns out not to be necessary for the file named
 " '~/.vimrc', because Vim automatically enters nocompatible mode if that file
 " is present. But we're including it here just in case this config file is
-" loaded some other way (e.g. saved as `foo`, and then Vim started with
-" `vim -u foo`).
+" loaded some other way (e.g. saved as `foo`, and then Vim started with `vim
+" -u foo`).
 set nocompatible
-
-""" VUNDLE
-filetype off                  " required
-
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
-
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
-
-" Markdown stuff
-Plugin 'rust-lang/rust.vim'
-Plugin 'airblade/vim-gitgutter'
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
-Plugin 'altercation/vim-colors-solarized'
-
-" TO INSTALL, RUN `:PluginInstall`
-
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-" Put your non-Plugin stuff after this line
 
 " Turn on syntax highlighting.
 syntax on
