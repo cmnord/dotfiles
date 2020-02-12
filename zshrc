@@ -31,6 +31,7 @@ export EDITOR="vim"
 
 # Aliases
 alias py="python3"
+alias mv="mv -i"
 
 # Vi mode
 bindkey -v
