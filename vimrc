@@ -87,3 +87,7 @@ set cursorline
 
 " Highlight all the search results
 set hlsearch
+
+" Maintain undo history between sessions
+set undofile
+set undodir=~/.vim/undodir
