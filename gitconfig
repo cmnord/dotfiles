@@ -25,6 +25,9 @@
 	interactive = auto
 	status = auto
 
+[commit]
+	gpgsign=true
+
 [pull]
 	rebase = true
 
