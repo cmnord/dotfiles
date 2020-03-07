@@ -36,3 +36,5 @@ alias mv="mv -i"
 # Vi mode
 bindkey -v
 export KEYTIMEOUT=1
+
+mergepdf() { gs -q -sPAPERSIZE=letter -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=output.pdf "$@"; }
