@@ -33,8 +33,20 @@ export EDITOR="vim"
 alias py="python3"
 alias mv="mv -i"
 
+check(){ cd ~/dev/rust; ./x.py check; }
+build_all(){ cd ~/dev/rust; ./x.py build -i --stage 1 src/libstd; }
+build_keep(){ cd ~/dev/rust; ./x.py build -i --stage 1 src/libstd --keep-stage 1; }
+
+build() {
+  cd ~/dev/rust;
+  ./x.py check && echo "Check passed, building..."; ./x.py build -i --stage 1 src/libstd --keep-stage 1;
+}
+
 # Vi mode
 bindkey -v
 export KEYTIMEOUT=1
 
 mergepdf() { gs -q -sPAPERSIZE=letter -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=output.pdf "$@"; }
+
+# Rust
+export PATH="$HOME/.cargo/bin:$PATH"
