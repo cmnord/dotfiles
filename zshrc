@@ -22,9 +22,6 @@ source $ZSH/oh-my-zsh.sh
 
 export EDITOR="vim"
 
-# ssh
-# export SSH_KEY_PATH="~/.ssh/rsa_id"
-
 # Aliases
 alias py="python3"
 alias mv="mv -i"
@@ -46,3 +43,6 @@ mergepdf() { gs -q -sPAPERSIZE=letter -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutp
 
 # Rust
 export PATH="$HOME/.cargo/bin:$PATH"
+
+# Add .dotfiles binaries to PATH
+export PATH="$HOME/.dotfiles/bin:$PATH"

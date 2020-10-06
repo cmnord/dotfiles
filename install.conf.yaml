@@ -5,7 +5,6 @@
 - clean: ['~']
 
 - link:
-    /usr/local/bin/diff-so-fancy: bin/diff-so-fancy
     ~/.dotfiles: ''
     ~/.gitconfig:
     ~/.inputrc:
