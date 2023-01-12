@@ -9,11 +9,12 @@
 	lol = log --graph --decorate --oneline
 	lola = log --graph --decorate --oneline --all
 	pfwl = push --force-with-lease
-	pom = pull origin master
+	pom = pull origin main
 	rb = rebase
 	rbc = rebase --continue
-	rbi = rebase --interactive
+	rom = rebase origin/main --interactive
 	st = status
+	ap = add -p
 
 [core]
 	editor = vim
@@ -46,5 +47,5 @@
 	newHighlight = "green bold 22"
 
 [user]
-	email = "cnord@mit.edu"
+	email = "cnord@alum.mit.edu"
 	name = "Claire Nord"
