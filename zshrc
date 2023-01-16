@@ -46,3 +46,6 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 # Add .dotfiles binaries to PATH
 export PATH="$HOME/.dotfiles/bin:$PATH"
+
+# Add Ruby to path
+export PATH="/usr/local/opt/ruby/bin:$PATH"
