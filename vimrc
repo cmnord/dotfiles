@@ -10,6 +10,10 @@ set nocompatible
 " Turn on syntax highlighting.
 syntax on
 
+" Use new regular expression engine for Typescript syntax highlighting
+" performance
+set re=0
+
 " Disable the default Vim startup message.
 set shortmess+=I
 
