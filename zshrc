@@ -48,4 +48,4 @@ export PATH="$HOME/.cargo/bin:$PATH"
 export PATH="$HOME/.dotfiles/bin:$PATH"
 
 # Add Ruby to path
-export PATH="/usr/local/opt/ruby/bin:$PATH"
+export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
