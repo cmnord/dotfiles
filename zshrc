@@ -26,30 +26,37 @@ export EDITOR="vim"
 alias py="python3"
 alias mv="mv -i"
 
-check(){ cd ~/dev/rust; ./x.py check; }
-build_all(){ cd ~/dev/rust; ./x.py build -i --stage 1 src/libstd; }
-build_keep(){ cd ~/dev/rust; ./x.py build -i --stage 1 src/libstd --keep-stage 1; }
-
-build() {
-  cd ~/dev/rust;
-  ./x.py check && echo "Check passed, building..."; ./x.py build -i --stage 1 src/libstd --keep-stage 1;
-}
-
 # Vi mode
 bindkey -v
 export KEYTIMEOUT=1
 
 mergepdf() { gs -q -sPAPERSIZE=letter -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=output.pdf "$@"; }
 
+# pyenv
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+fi
+
+# PATH additions
+
 # Rust
 export PATH="$HOME/.cargo/bin:$PATH"
 
-# Add .dotfiles binaries to PATH
+# .dotfiles binaries
 export PATH="$HOME/.dotfiles/bin:$PATH"
 
-# Add Ruby to path
-export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
-
+# NVM
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# Postgres.app
+export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
+
+# RVM
+export PATH="$PATH:$HOME/.rvm/bin"
+
+# Go
+export GOPATH="$HOME/go"
+export GOBIN="$GOPATH/bin"
+export PATH="$PATH:$GOBIN"
