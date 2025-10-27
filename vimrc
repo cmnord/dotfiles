@@ -87,3 +87,13 @@ set hlsearch
 " Maintain undo history between sessions
 set undofile
 set undodir=~/.vim/undodir
+
+" tab:xy[z]	Two or three characters to be used to show a tab.
+" 		The third character is optional.
+set listchars=tab:»\ ,space:‧,extends:›,precedes:‹,nbsp:·
+set list
+" Style listchars:
+" - Foreground: lighter than normal text (in between base1 and base2 in
+"   solarized light palette; stolen from VSCode)
+" - Background: same as normal text (none)
+hi SpecialKey ctermfg=248 guifg=#acb1ac ctermbg=NONE guibg=NONE
