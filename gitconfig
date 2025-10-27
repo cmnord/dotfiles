@@ -5,6 +5,9 @@
 	cmm = commit -m
 	cma = commit --amend
 	co = checkout
+	cp = cherry-pick
+	cpa = cherry-pick --abort
+	cpc = cherry-pick --continue
 	ds = diff --staged
 	lol = log --graph --decorate --oneline
 	lola = log --graph --decorate --oneline --all
@@ -12,12 +15,14 @@
 	pom = pull origin main
 	rb = rebase
 	rbc = rebase --continue
+	rbi = rebase --interactive
 	rom = rebase origin/main --interactive
 	st = status
 	ap = add -p
 
 [core]
 	editor = vim
+	excludesfile = ~/.gitignore_global
 	pager = diff-so-fancy | less --tabs=4 -RFX # need to install diff-so-fancy
 
 [color]
@@ -25,6 +30,19 @@
 	branch = auto
 	interactive = auto
 	status = auto
+
+[commit]
+	verbose = true
+
+[help]
+	autocorrect = prompt
+
+[init]
+	defaultBranch = main
+
+[merge]
+	tool = vimdiff
+	prompt = false
 
 [pull]
 	rebase = true
@@ -47,5 +65,5 @@
 	newHighlight = "green bold 22"
 
 [user]
-	email = "cnord@alum.mit.edu"
+	email = "cnord19@gmail.com"
 	name = "Claire Nord"
