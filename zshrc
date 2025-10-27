@@ -16,10 +16,12 @@ export EDITOR="vim"
 # Aliases
 alias py="python3"
 alias mv="mv -i"
+alias ls="eza"
 
-# Vi mode
-bindkey -v
 export KEYTIMEOUT=1
+
+# emacs mode
+bindkey -e
 
 mergepdf() { gs -q -sPAPERSIZE=letter -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=output.pdf "$@"; }
 
@@ -27,6 +29,13 @@ mergepdf() { gs -q -sPAPERSIZE=letter -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutp
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
 fi
+
+# ensure compatibility tmux <-> direnv
+if [[ -n $TMUX ]] && [[ -n $DIRENV_DIR ]]; then
+  unset -m "DIRENV_*" # unset env vars starting with DIRENV_
+fi
+# direnv
+eval "$(direnv hook zsh)"
 
 # PATH additions
 
@@ -51,3 +60,16 @@ export PATH="$PATH:$HOME/.rvm/bin"
 export GOPATH="$HOME/go"
 export GOBIN="$GOPATH/bin"
 export PATH="$PATH:$GOBIN"
+
+# Homebrew
+export HOMEBREW_NO_ANALYTICS=1
+
+# Python
+export PATH="$(brew --prefix python)/libexec/bin:$PATH"
+
+# Maintain ANSI color sequences, case-insensitive search with smart-casing
+export LESS=-Ri
+
+. "$HOME/.atuin/bin/env"
+
+eval "$(atuin init zsh --disable-up-arrow)"
