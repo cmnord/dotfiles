@@ -1,0 +1,17 @@
+{
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "editor.fontFamily": "'Meslo LG M DZ for Powerline', Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontSize": 13,
+    "editor.formatOnSave": true,
+    "editor.renderWhitespace": "boundary",
+    "git.openRepositoryInParentFolders": "always",
+    "isort.args": [
+        "--profile",
+        "black"
+    ],
+    "vim.hlsearch": true,
+    "workbench.colorTheme": "Solarized Light",
+    "workbench.sideBar.location": "right"
+}
