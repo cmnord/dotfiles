@@ -8,11 +8,11 @@
     ~/.dotfiles: ''
     ~/.gitconfig:
     ~/.inputrc:
-    ~/.oh-my-zsh/custom/plugins: zsh-plugins
     ~/.tmux.conf:
     ~/.vim:
     ~/.vimrc:
     ~/.zshrc:
+    ~/.zsh:
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]

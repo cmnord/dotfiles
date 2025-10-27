@@ -3,10 +3,10 @@
 	url = https://github.com/anishathalye/dotbot
 	ignore = dirty
 [submodule "zsh-plugins/zsh-autosuggestions"]
-	path = zsh-plugins/zsh-autosuggestions
+	path = zsh/plugins/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions
 [submodule "zsh-plugins/zsh-syntax-highlighting"]
-	path = zsh-plugins/zsh-syntax-highlighting
+	path = zsh/plugins/zsh-syntax-highlighting
 	url = https://github.com/zsh-users/zsh-syntax-highlighting
 [submodule "vim/pack/vendor/start/rust.vim"]
 	path = vim/pack/vendor/start/rust.vim
@@ -23,3 +23,9 @@
 [submodule "vim/pack/vendor/start/vim-colors-solarized"]
 	path = vim/pack/vendor/start/vim-colors-solarized
 	url = https://github.com/altercation/vim-colors-solarized
+[submodule "zsh-history-substring-search"]
+	path = zsh/plugins/zsh-history-substring-search
+	url = git@github.com:zsh-users/zsh-history-substring-search.git
+[submodule "agnoster-zsh-theme"]
+	path = zsh/plugins/agnoster-zsh-theme
+	url = git@github.com:agnoster/agnoster-zsh-theme.git
