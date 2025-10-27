@@ -1,0 +1,43 @@
+{
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    "editor.fontFamily": "'Meslo LG M DZ for Powerline', Menlo, Monaco, 'Courier New', monospace",
+    "editor.fontSize": 13,
+    "editor.formatOnSave": true,
+    "editor.renderWhitespace": "boundary",
+    "git.openRepositoryInParentFolders": "always",
+    "gitlens.views.scm.grouped.hiddenViews": {
+        "commits": false,
+        "branches": false,
+        "remotes": false,
+        "stashes": false,
+        "tags": false,
+        "worktrees": false,
+        "contributors": false,
+        "repositories": true,
+        "searchAndCompare": false,
+        "launchpad": true
+    },
+    "gitlens.views.scm.grouped.views": {
+        "commits": false,
+        "branches": false,
+        "remotes": false,
+        "stashes": false,
+        "tags": false,
+        "worktrees": false,
+        "contributors": false,
+        "repositories": false,
+        "searchAndCompare": false,
+        "launchpad": false
+    },
+    "isort.args": [
+        "--profile",
+        "black"
+    ],
+    "redhat.telemetry.enabled": false,
+    "vim.hlsearch": true,
+    "workbench.colorTheme": "Solarized Light",
+    "workbench.sideBar.location": "right",
+    "workbench.startupEditor": "none"
+}
