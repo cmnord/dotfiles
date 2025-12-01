@@ -6,6 +6,7 @@
     "editor.fontSize": 13,
     "editor.formatOnSave": true,
     "editor.renderWhitespace": "boundary",
+    "extensions.autoUpdate": false,
     "git.openRepositoryInParentFolders": "always",
     "gitlens.views.scm.grouped.hiddenViews": {
         "commits": false,
@@ -36,6 +37,7 @@
         "black"
     ],
     "redhat.telemetry.enabled": false,
+    "typescript.updateImportsOnFileMove.enabled": "always",
     "vim.hlsearch": true,
     "workbench.colorTheme": "Solarized Light",
     "workbench.sideBar.location": "right",
