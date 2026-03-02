@@ -4,6 +4,17 @@ source ~/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
 
+# Expand ... to ../.. and so on
+expand-dot-to-parent-directory-path() {
+  if [[ $LBUFFER = *.. ]]; then
+    LBUFFER+=/../..
+  else
+    LBUFFER+=.
+  fi
+}
+zle -N expand-dot-to-parent-directory-path
+bindkey . expand-dot-to-parent-directory-path
+
 # User configuration
 
 # Load agnoster theme
