@@ -95,3 +95,6 @@ eval "$(atuin init zsh --disable-up-arrow)"
 
 # Set up fzf key bindings and fuzzy completion
 source <(fzf --zsh)
+
+# zoxide (smart cd)
+eval "$(zoxide init zsh)"
