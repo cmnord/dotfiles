@@ -4,6 +4,12 @@ source ~/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
 
+# Global aliases for directory traversal (from oh-my-zsh).
+# Expands anywhere on the command line, e.g. `cd ...` or `ls .../foo`.
+alias -g ...='../..'
+alias -g ....='../../..'
+alias -g .....='../../../..'
+
 # User configuration
 
 # Load agnoster theme
