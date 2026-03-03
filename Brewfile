@@ -1,8 +1,10 @@
 # CLI tools
+brew "atuin"
 brew "direnv"
 brew "eza"
 brew "fzf"
 brew "gh"
+brew "python"
 brew "the_silver_searcher"
 brew "tmux"
 brew "tree"
