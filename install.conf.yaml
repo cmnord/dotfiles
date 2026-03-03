@@ -20,3 +20,4 @@
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
+  - [command -v brew >/dev/null && brew bundle, Installing brew packages]
