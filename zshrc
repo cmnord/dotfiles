@@ -93,3 +93,6 @@ source <(fzf --zsh)
 
 # zoxide (smart cd)
 eval "$(zoxide init zsh)"
+
+# Google Cloud SDK
+export PATH="/opt/homebrew/share/google-cloud-sdk/bin:$PATH"
