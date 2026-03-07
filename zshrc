@@ -18,6 +18,8 @@ setopt NO_BEEP
 unsetopt LIST_BEEP
 # Remove prompt_virtualenv from default
 AGNOSTER_PROMPT_SEGMENTS=(prompt_status prompt_context prompt_dir prompt_git prompt_end)
+# Default fg=8 is invisible on Solarized Dark (same color as background)
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#586e75"
 
 export EDITOR="vim"
 
