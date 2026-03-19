@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ "${1:-}" = "" ]; then
+  echo "usage: whoport <port>"
+  exit 1
+fi
+
+PORT="$1"
+PIDS="$(lsof -t -nP -iTCP:"$PORT" -sTCP:LISTEN | paste -sd, -)"
+
+if [ "$PIDS" = "" ]; then
+  echo "nothing listening on $PORT"
+  exit 1
+fi
+
+ps -o pid=PID,command=COMMAND -p "$PIDS"
