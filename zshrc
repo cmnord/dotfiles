@@ -86,12 +86,12 @@ export PATH="$HOME/.local/bin:$PATH"
 # -q: visual bell instead of audio
 export LESS=-Riq
 
-. "$HOME/.atuin/bin/env"
+# Set up fzf key bindings and fuzzy completion first.
+# Initialization order matters: atuin also binds Ctrl-R, so loading it after
+# fzf keeps fzf's Ctrl-T/Alt-C while letting atuin own history search.
+source <(fzf --zsh)
 
 eval "$(atuin init zsh --disable-up-arrow)"
-
-# Set up fzf key bindings and fuzzy completion
-source <(fzf --zsh)
 
 # zoxide (smart cd)
 eval "$(zoxide init zsh)"
