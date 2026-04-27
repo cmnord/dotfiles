@@ -29,3 +29,6 @@
 [submodule "agnoster-zsh-theme"]
 	path = zsh/plugins/agnoster-zsh-theme
 	url = git@github.com:agnoster/agnoster-zsh-theme.git
+[submodule "vim/pack/vendor/start/vim-localvimrc"]
+	path = vim/pack/vendor/start/vim-localvimrc
+	url = https://github.com/embear/vim-localvimrc

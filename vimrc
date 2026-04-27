@@ -75,6 +75,16 @@ inoremap <Right> <ESC>:echoe "Use l"<CR>
 inoremap <Up>    <ESC>:echoe "Use k"<CR>
 inoremap <Down>  <ESC>:echoe "Use j"<CR>
 
+" vim-localvimrc loads project-specific .lvimrc files from parent directories.
+" Restrict that behavior to conductor workspaces.
+let g:localvimrc_whitelist = '^/Users/cnord/conductor/workspaces/.*\.lvimrc$'
+" Load local configs in the sandbox by default, but ask once per file to retry
+" without the sandbox when a trusted workspace .lvimrc needs commands like
+" `colorscheme`; persistent answers are remembered across sessions.
+let g:localvimrc_sandbox = 1
+let g:localvimrc_ask = 1
+let g:localvimrc_persistent = 2
+
 " Airline things
 let g:airline_powerline_fonts=1
 let g:airline_theme='solarized'
