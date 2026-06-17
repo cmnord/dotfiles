@@ -2,17 +2,38 @@
 
 set -euo pipefail
 
-if [ "${1:-}" = "" ]; then
-  echo "usage: whoport <port>"
+usage() {
+  cat <<'EOF'
+usage: whoport <port>...
+
+Show the process(es) listening on one or more TCP ports.
+
+  whoport 3000              one port
+  whoport 3000 8080 5432    several ports
+EOF
+}
+
+case "${1:-}" in
+  -h | --help) usage; exit 0 ;;
+  "") usage >&2; exit 1 ;;
+esac
+
+found=0
+
+for port in "$@"; do
+  # one lsof per port so we know which port each PID belongs to
+  while read -r pid; do
+    [ -n "$pid" ] || continue
+    if [ "$found" -eq 0 ]; then
+      printf '%-6s %-8s %s\n' PORT PID COMMAND
+      found=1
+    fi
+    cmd="$(ps -o command= -p "$pid")"
+    printf '%-6s %-8s %s\n' "$port" "$pid" "$cmd"
+  done < <(lsof -t -nP -iTCP:"$port" -sTCP:LISTEN || true)
+done
+
+if [ "$found" -eq 0 ]; then
+  echo "nothing listening on: $*" >&2
   exit 1
 fi
-
-PORT="$1"
-PIDS="$(lsof -t -nP -iTCP:"$PORT" -sTCP:LISTEN | paste -sd, -)"
-
-if [ "$PIDS" = "" ]; then
-  echo "nothing listening on $PORT"
-  exit 1
-fi
-
-ps -o pid=PID,command=COMMAND -p "$PIDS"
