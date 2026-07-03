@@ -9,3 +9,6 @@ brew "the_silver_searcher"
 brew "tmux"
 brew "tree"
 brew "zoxide"
+
+# macOS apps
+cask "karabiner-elements"

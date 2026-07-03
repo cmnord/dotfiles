@@ -21,6 +21,10 @@
     '~/Library/Application Support/Code/User/settings.json':
       if: '[ `uname` = Darwin ]'
       path: vscode/settings.json
+    '~/.config/karabiner':
+      if: '[ `uname` = Darwin ]'
+      path: karabiner
+      create: true
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
