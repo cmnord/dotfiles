@@ -1,0 +1,7 @@
+[
+  {
+    "key": "cmd+l",
+    "command": "chatgpt.addToThread",
+    "when": "editorTextFocus && editorHasSelection"
+  }
+]
