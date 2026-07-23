@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.cnord.conductor-cleanup</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/cnord/bin/conductor-cleanup</string>
+    </array>
+    <!-- Daily at noon: Mac is usually awake; launchd coalesces a missed run
+         on wake, so sleep at noon just delays it rather than skipping it. -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>12</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    <key>StandardOutPath</key>
+    <string>/Users/cnord/Library/Logs/conductor-cleanup.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/cnord/Library/Logs/conductor-cleanup.log</string>
+    <key>ProcessType</key>
+    <string>Background</string>
+</dict>
+</plist>

@@ -28,7 +28,16 @@
       if: '[ `uname` = Darwin ]'
       path: karabiner
       create: true
+    '~/Library/LaunchAgents/com.cnord.conductor-cleanup.plist':
+      if: '[ `uname` = Darwin ]'
+      path: launchd/com.cnord.conductor-cleanup.plist
+      create: true
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
   - [command -v brew >/dev/null && brew bundle, Installing brew packages]
+  # Keep Conductor's worktree churn out of the Spotlight index (its create/
+  # teardown of node_modules & build trees has stalled indexing even with
+  # disk free). touch is idempotent; the marker's presence is all that matters.
+  - command: mkdir -p ~/conductor && touch ~/conductor/.metadata_never_index
+    description: Excluding ~/conductor from Spotlight
