@@ -5,6 +5,25 @@ compinit -d "$HOME/.cache/zsh/zcompdump"
 
 # ZSH plugins
 source ~/.zsh/plugins/agnoster-zsh-theme/agnoster.zsh-theme
+
+# Agnoster's context uses the terminal's default foreground on black, which is
+# unreadable in Conductor cloud's light terminal palette. Use explicit
+# high-contrast foregrounds there without changing the local terminal theme.
+if [[ "${CONDUCTOR_IS_LOCAL:-}" == "0" ]]; then
+  prompt_context() {
+    local user
+    user="$(whoami)"
+
+    if [[ "$user" != "$DEFAULT_USER" || -n "$SSH_CONNECTION" ]]; then
+      prompt_segment black white " %(!.%{%F{yellow}%}.)$user@%m "
+    fi
+  }
+
+  prompt_dir() {
+    prompt_segment blue white ' %~ '
+  }
+fi
+
 source ~/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
