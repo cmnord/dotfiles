@@ -25,7 +25,6 @@ if [[ "${CONDUCTOR_IS_LOCAL:-}" == "0" ]]; then
 fi
 
 source ~/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source ~/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
 
 # Global aliases for directory traversal (from oh-my-zsh).
@@ -134,3 +133,10 @@ fi
 
 # Google Cloud SDK
 export PATH="/opt/homebrew/share/google-cloud-sdk/bin:$PATH"
+
+# Keep this last: zsh-syntax-highlighting must wrap widgets created by the
+# rest of the configuration. Conductor cloud's terminal currently applies its
+# per-character style reset to the entire prompt line, so disable it there.
+if [[ "${CONDUCTOR_IS_LOCAL:-}" != "0" ]]; then
+  source ~/.zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
