@@ -1,3 +1,8 @@
+# Native zsh completion
+autoload -Uz compinit
+[[ -d "$HOME/.cache/zsh" ]] || mkdir -p "$HOME/.cache/zsh"
+compinit -d "$HOME/.cache/zsh/zcompdump"
+
 # ZSH plugins
 source ~/.zsh/plugins/agnoster-zsh-theme/agnoster.zsh-theme
 source ~/.zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
@@ -26,7 +31,9 @@ export EDITOR="vim"
 # Aliases
 alias py="python3"
 alias mv="mv -i"
-alias ls="eza"
+if (( $+commands[eza] )); then
+  alias ls="eza"
+fi
 
 export KEYTIMEOUT=1
 
@@ -45,7 +52,9 @@ if [[ -n $TMUX ]] && [[ -n $DIRENV_DIR ]]; then
   unset -m "DIRENV_*" # unset env vars starting with DIRENV_
 fi
 # direnv
-eval "$(direnv hook zsh)"
+if (( $+commands[direnv] )); then
+  eval "$(direnv hook zsh)"
+fi
 
 # PATH additions
 
@@ -76,7 +85,9 @@ export PATH="$PATH:$GOBIN"
 export HOMEBREW_NO_ANALYTICS=1
 
 # Python
-export PATH="$(brew --prefix python)/libexec/bin:$PATH"
+if (( $+commands[brew] )); then
+  export PATH="$(brew --prefix python)/libexec/bin:$PATH"
+fi
 
 # Claude Code
 export PATH="$HOME/.local/bin:$PATH"
@@ -89,12 +100,18 @@ export LESS=-Riq
 # Set up fzf key bindings and fuzzy completion first.
 # Initialization order matters: atuin also binds Ctrl-R, so loading it after
 # fzf keeps fzf's Ctrl-T/Alt-C while letting atuin own history search.
-source <(fzf --zsh)
+if (( $+commands[fzf] )); then
+  source <(fzf --zsh)
+fi
 
-eval "$(atuin init zsh --disable-up-arrow)"
+if (( $+commands[atuin] )); then
+  eval "$(atuin init zsh --disable-up-arrow)"
+fi
 
 # zoxide (smart cd)
-eval "$(zoxide init zsh)"
+if (( $+commands[zoxide] )); then
+  eval "$(zoxide init zsh)"
+fi
 
 # Google Cloud SDK
 export PATH="/opt/homebrew/share/google-cloud-sdk/bin:$PATH"

@@ -76,8 +76,8 @@ inoremap <Up>    <ESC>:echoe "Use k"<CR>
 inoremap <Down>  <ESC>:echoe "Use j"<CR>
 
 " vim-localvimrc loads project-specific .lvimrc files from parent directories.
-" Restrict that behavior to conductor workspaces.
-let g:localvimrc_whitelist = '^/Users/cnord/conductor/workspaces/.*\.lvimrc$'
+" Restrict that behavior to local and cloud Conductor workspaces.
+let g:localvimrc_whitelist = '^\(/Users/cnord/conductor/workspaces/.*\|/home/vercel-sandbox/.*\)\.lvimrc$'
 " Load local configs in the sandbox by default
 let g:localvimrc_sandbox = 1
 " Ask once per file to retry without the sandbox: the `colorscheme` command
@@ -101,7 +101,8 @@ set hlsearch
 
 " Maintain undo history between sessions
 set undofile
-set undodir=~/.vim/undodir
+set undodir=~/.cache/vim/undodir
+silent! call mkdir(expand(&undodir), 'p')
 
 " tab:xy[z]	Two or three characters to be used to show a tab.
 " 		The third character is optional.

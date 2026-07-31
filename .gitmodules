@@ -25,10 +25,10 @@
 	url = https://github.com/altercation/vim-colors-solarized
 [submodule "zsh-history-substring-search"]
 	path = zsh/plugins/zsh-history-substring-search
-	url = git@github.com:zsh-users/zsh-history-substring-search.git
+	url = https://github.com/zsh-users/zsh-history-substring-search
 [submodule "agnoster-zsh-theme"]
 	path = zsh/plugins/agnoster-zsh-theme
-	url = git@github.com:agnoster/agnoster-zsh-theme.git
+	url = https://github.com/agnoster/agnoster-zsh-theme
 [submodule "vim/pack/vendor/start/vim-localvimrc"]
 	path = vim/pack/vendor/start/vim-localvimrc
 	url = https://github.com/embear/vim-localvimrc

@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [[ "$(uname -s)" != "Linux" || "$(uname -m)" != "x86_64" ]]; then
+  echo "install-cloud supports x86_64 Linux only" >&2
+  exit 1
+fi
+
+sudo dnf install -y zsh vim-enhanced
+
+cloud_install_tmp="$(mktemp -d)"
+trap 'rm -rf "$cloud_install_tmp"' EXIT
+
+download_verified() {
+  local download_url="$1"
+  local expected_sha256="$2"
+  local output_path="$3"
+
+  curl -fsSL "$download_url" -o "$output_path"
+  printf '%s  %s\n' "$expected_sha256" "$output_path" | sha256sum --check --status
+}
+
+download_verified \
+  "https://github.com/eza-community/eza/releases/download/v0.23.5/eza_x86_64-unknown-linux-gnu.tar.gz" \
+  "35c70c5c43c29108075e58b893234c67ef585f0b53a7eaf8e9e7d4eec9f339b4" \
+  "$cloud_install_tmp/eza.tar.gz"
+tar -xzf "$cloud_install_tmp/eza.tar.gz" -C "$cloud_install_tmp"
+sudo install -m 0755 "$cloud_install_tmp/eza" /usr/local/bin/eza
+
+download_verified \
+  "https://github.com/junegunn/fzf/releases/download/v0.74.1/fzf-0.74.1-linux_amd64.tar.gz" \
+  "df53438be5f51e151bb4044d78fda72bdfe209e3ecd2baecae48e8dea370c81b" \
+  "$cloud_install_tmp/fzf.tar.gz"
+tar -xzf "$cloud_install_tmp/fzf.tar.gz" -C "$cloud_install_tmp"
+sudo install -m 0755 "$cloud_install_tmp/fzf" /usr/local/bin/fzf
+
+download_verified \
+  "https://github.com/direnv/direnv/releases/download/v2.37.1/direnv.linux-amd64" \
+  "1f1b93dd6f38523fde26dfac96151ef9d31a374e3005cd3345fb93555ae0c9b5" \
+  "$cloud_install_tmp/direnv"
+sudo install -m 0755 "$cloud_install_tmp/direnv" /usr/local/bin/direnv
+
+download_verified \
+  "https://github.com/atuinsh/atuin/releases/download/v18.18.1/atuin-x86_64-unknown-linux-musl.tar.gz" \
+  "732bcb4cbb57fa3bb7c9eaf1d866eabd673ba5f5978dc87fc6697369c5e8b33b" \
+  "$cloud_install_tmp/atuin.tar.gz"
+tar -xzf "$cloud_install_tmp/atuin.tar.gz" -C "$cloud_install_tmp"
+sudo install -m 0755 \
+  "$cloud_install_tmp/atuin-x86_64-unknown-linux-musl/atuin" \
+  /usr/local/bin/atuin
+
+download_verified \
+  "https://github.com/ajeetdsouza/zoxide/releases/download/v0.10.0/zoxide-0.10.0-x86_64-unknown-linux-musl.tar.gz" \
+  "2d93385b99f3e82cf2701609a1bffcad863fbeb75aa3fe7eb6be4d29be68b1ae" \
+  "$cloud_install_tmp/zoxide.tar.gz"
+tar -xzf "$cloud_install_tmp/zoxide.tar.gz" -C "$cloud_install_tmp"
+sudo install -m 0755 "$cloud_install_tmp/zoxide" /usr/local/bin/zoxide
+
+git -C "$DOTFILES_DIR" submodule sync --recursive
+git -C "$DOTFILES_DIR" submodule update --init --recursive
+
+"$DOTFILES_DIR/dotbot/bin/dotbot" \
+  -d "$DOTFILES_DIR" \
+  -c "$DOTFILES_DIR/install.cloud.conf.yaml"
+
+# Include personal preferences without replacing Conductor's credential helper.
+if ! git config --global --get-all include.path | grep -Fqx "$DOTFILES_DIR/gitconfig"; then
+  git config --global --add include.path "$DOTFILES_DIR/gitconfig"
+fi
+
+sudo usermod --shell /bin/zsh "$(id -un)"
+
