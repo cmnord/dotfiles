@@ -32,3 +32,6 @@
 [submodule "vim/pack/vendor/start/vim-localvimrc"]
 	path = vim/pack/vendor/start/vim-localvimrc
 	url = https://github.com/embear/vim-localvimrc
+[submodule "vendor/whoport"]
+	path = vendor/whoport
+	url = https://github.com/cmnord/whoport.git
