@@ -71,20 +71,13 @@ if ! git config --global --get-all include.path | grep -Fqx "$DOTFILES_DIR/gitco
   git config --global --add include.path "$DOTFILES_DIR/gitconfig"
 fi
 
-sudo usermod --shell /bin/zsh "$(id -un)"
+# Zsh's line editor redraws the input buffer with backspaces, which Conductor's
+# cloud terminal currently renders incorrectly. Leave cloud terminal tabs in
+# Bash and remove the handoff written by older versions of this installer.
+sudo usermod --shell /bin/bash "$(id -un)"
 
-# Conductor cloud terminal tabs currently start Bash even when the account's
-# login shell is zsh. Hand only real interactive terminals to zsh; requiring
-# TTY input and output leaves environment capture and automation in Bash.
 cloud_bashrc="$HOME/.bashrc"
 cloud_zsh_marker="# Start zsh in interactive Conductor cloud terminals."
-if [[ ! -f "$cloud_bashrc" ]] ||
-  ! grep -Fqx "$cloud_zsh_marker" "$cloud_bashrc"; then
-  printf '%s\n' \
-    '' \
-    "$cloud_zsh_marker" \
-    '# Set CONDUCTOR_KEEP_BASH=1 to open an interactive Bash shell instead.' \
-    'if [[ $- == *i* && -t 0 && -t 1 && -z "${CONDUCTOR_KEEP_BASH:-}" && -x /bin/zsh ]]; then' \
-    '  exec /bin/zsh -l' \
-    'fi' >>"$cloud_bashrc"
+if [[ -f "$cloud_bashrc" ]] && grep -Fqx "$cloud_zsh_marker" "$cloud_bashrc"; then
+  sed -i '/^# Start zsh in interactive Conductor cloud terminals\.$/,/^fi$/d' "$cloud_bashrc"
 fi
