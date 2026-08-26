@@ -11,6 +11,7 @@ bash "$HOME/dotfiles/install-cloud"
 ```
 
 It links the portable configuration without replacing Conductor's Git
-credentials. Terminals stay in Bash because zsh redraws render incorrectly.
+credentials and keeps Bash as the login shell.
+
 Keep the computer install script as a thin wrapper around this entrypoint and
 rebuild the snapshot after changing it.
