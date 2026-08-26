@@ -6,6 +6,7 @@
 
 - link:
     ~/.dotfiles: ''
+    ~/.bashrc:
     ~/.gitignore_global:
     ~/.inputrc:
     ~/.tmux.conf:
@@ -16,4 +17,3 @@
     ~/bin/:
       glob: true
       path: bin/*
-
