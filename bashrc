@@ -5,6 +5,12 @@ case $- in
   *) return ;;
 esac
 
+# macOS displays a migration notice when its system Bash is started directly.
+# Selecting Bash intentionally here keeps interactive startup quiet.
+case $OSTYPE in
+  darwin*) export BASH_SILENCE_DEPRECATION_WARNING=1 ;;
+esac
+
 # Readline is shared by many programs through ~/.inputrc. Select Emacs editing
 # and silence the bell here so these Bash preferences do not affect them.
 set -o emacs
