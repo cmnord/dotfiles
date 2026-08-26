@@ -9,19 +9,10 @@ if [[ "$(uname -s)" != "Linux" || "$(uname -m)" != "x86_64" ]]; then
   exit 1
 fi
 
+# bash-completion adds context-aware tab completion to interactive Bash.
+# zsh keeps the repository's alternative shell configuration available.
+# vim-enhanced provides the configured command-line editor.
 sudo dnf install -y bash-completion zsh vim-enhanced
-
-# Remove the handoff installed by older versions before Dotbot links the
-# repository's Bash configuration. Restrict the edit to a regular file so an
-# existing symlink target is never modified; repeated runs are harmless.
-legacy_bashrc="$HOME/.bashrc"
-legacy_zsh_marker="# Start zsh in interactive Conductor cloud terminals."
-if [[ -f "$legacy_bashrc" && ! -L "$legacy_bashrc" ]] &&
-  grep -Fqx "$legacy_zsh_marker" "$legacy_bashrc"; then
-  sed -i \
-    '/^# Start zsh in interactive Conductor cloud terminals\.$/,/^fi$/d' \
-    "$legacy_bashrc"
-fi
 
 cloud_install_tmp="$(mktemp -d)"
 trap 'rm -rf "$cloud_install_tmp"' EXIT

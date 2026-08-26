@@ -46,6 +46,8 @@ mergepdf() {
     -sOutputFile=output.pdf "$@"
 }
 
+# Direct PATH assignments work in Bash, but these helpers avoid duplicate
+# entries when bashrc is sourced repeatedly while preserving path priority.
 _dotfiles_path_prepend() {
   case ":$PATH:" in
     *":$1:"*) ;;
@@ -148,77 +150,18 @@ if command -v direnv >/dev/null 2>&1; then
   eval "$(direnv hook bash)"
 fi
 
-_dotfiles_git_prompt() {
-  local branch state counts ahead behind
-
-  git rev-parse --is-inside-work-tree >/dev/null 2>&1 || return
-  branch="$(git symbolic-ref --quiet --short HEAD 2>/dev/null || \
-    git rev-parse --short HEAD 2>/dev/null)" || return
-  state=""
-
-  if [[ -n "$(git ls-files --unmerged 2>/dev/null)" ]]; then
-    state="${state}!"
-  fi
-  if ! git diff --no-ext-diff --quiet --ignore-submodules -- 2>/dev/null; then
-    state="${state}*"
-  fi
-  if ! git diff --no-ext-diff --cached --quiet --ignore-submodules -- 2>/dev/null; then
-    state="${state}+"
-  fi
-  if [[ -n "$(git ls-files --others --exclude-standard 2>/dev/null | sed -n '1p')" ]]; then
-    state="${state}?"
-  fi
-
-  counts="$(git rev-list --left-right --count HEAD...@{upstream} 2>/dev/null || :)"
-  if [[ -n "$counts" ]]; then
-    set -- $counts
-    ahead="${1:-0}"
-    behind="${2:-0}"
-    [[ "$ahead" -gt 0 ]] && state="${state}↑${ahead}"
-    [[ "$behind" -gt 0 ]] && state="${state}↓${behind}"
-  fi
-
-  printf '%s%s' "$branch" "${state:+ $state}"
-}
-
-_dotfiles_prompt_command() {
-  local last_status=$? reset red green blue magenta yellow prompt_user git_prompt
-
-  # Append this shell's latest command, then import commands written by peers.
-  builtin history -a 2>/dev/null || :
-  builtin history -n 2>/dev/null || :
-
-  reset='\[\e[0m\]'
-  red='\[\e[31m\]'
-  green='\[\e[32m\]'
-  blue='\[\e[34m\]'
-  magenta='\[\e[35m\]'
-  yellow='\[\e[33m\]'
-  PS1=""
-
-  if [[ "$last_status" -ne 0 ]]; then
-    PS1="${red}✘ ${last_status}${reset} "
-  fi
-
-  prompt_user="${USER:-$(id -un)}"
-  if [[ "$EUID" -eq 0 || -n "${SSH_CONNECTION:-}${SSH_TTY:-}" ]]; then
-    PS1="${PS1}${yellow}${prompt_user}@\h${reset} "
-  fi
-
-  PS1="${PS1}${blue}\w${reset}"
-  git_prompt="$(_dotfiles_git_prompt)"
-  if [[ -n "$git_prompt" ]]; then
-    PS1="${PS1} ${magenta}(${git_prompt})${reset}"
-  fi
-  PS1="${PS1}\n${green}\\\$${reset} "
-}
-
-# Keep PROMPT_COMMAND scalar for Bash 3.2. Optional integrations loaded below
-# preserve it, so the first hook can capture the previous command's status.
-case ";${PROMPT_COMMAND:-};" in
-  *';_dotfiles_prompt_command;'*) ;;
-  *) PROMPT_COMMAND="_dotfiles_prompt_command${PROMPT_COMMAND:+; $PROMPT_COMMAND}" ;;
-esac
+# Keep the native prompt implementation separate from tool initialization.
+_dotfiles_prompt_file="$HOME/.bash/prompt"
+if [[ ! -r "$_dotfiles_prompt_file" ]]; then
+  _dotfiles_bashrc_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  _dotfiles_prompt_file="$_dotfiles_bashrc_dir/bash/prompt"
+  unset _dotfiles_bashrc_dir
+fi
+if [[ -r "$_dotfiles_prompt_file" ]]; then
+  # shellcheck source=bash/prompt
+  . "$_dotfiles_prompt_file"
+fi
+unset _dotfiles_prompt_file
 
 # Initialize fzf before Atuin: Atuin owns Ctrl-R while fzf retains Ctrl-T and
 # Alt-C. Both commands emit Bash-native setup code.

@@ -6,6 +6,8 @@
 
 - link:
     ~/.dotfiles: ''
+    ~/.bash:
+    ~/.bash_profile:
     ~/.bashrc:
     ~/.gitconfig:
     ~/.gitignore_global:
