@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
-readonly DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly DOTFILES_DIR
 
 if [[ "$(uname -s)" != "Linux" || "$(uname -m)" != "x86_64" ]]; then
   echo "install-cloud supports x86_64 Linux only" >&2
@@ -10,9 +11,14 @@ if [[ "$(uname -s)" != "Linux" || "$(uname -m)" != "x86_64" ]]; then
 fi
 
 # bash-completion adds context-aware tab completion to interactive Bash.
-# zsh keeps the repository's alternative shell configuration available.
+# lsof is the runtime dependency of the vendored whoport command.
 # vim-enhanced provides the configured command-line editor.
-sudo dnf install -y bash-completion zsh vim-enhanced
+# zsh keeps the repository's alternative shell configuration available.
+sudo dnf install -y \
+  bash-completion \
+  lsof \
+  vim-enhanced \
+  zsh
 
 cloud_install_tmp="$(mktemp -d)"
 trap 'rm -rf "$cloud_install_tmp"' EXIT
