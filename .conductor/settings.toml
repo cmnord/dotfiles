@@ -1,0 +1,12 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+[scripts]
+setup = """
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [[ "${CONDUCTOR_IS_LOCAL:-}" == "0" ]]; then
+  bash install-cloud
+fi
+"""
