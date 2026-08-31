@@ -1,4 +1,4 @@
 "$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
 
 [scripts]
-setup = 'if [[ "$(uname -s)" == "Linux" ]]; then bash install-cloud; fi'
+setup = 'if [[ "$(uname -s)" == "Linux" ]]; then bash "$HOME/dotfiles/install-cloud"; fi'
