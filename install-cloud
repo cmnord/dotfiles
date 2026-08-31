@@ -12,8 +12,8 @@ fi
 
 # bash-completion adds context-aware tab completion to interactive Bash.
 # lsof is the runtime dependency of the vendored whoport command.
-# zsh keeps the repository's alternative shell configuration available.
 # vim-enhanced provides the configured command-line editor.
+# zsh keeps the repository's alternative shell configuration available.
 sudo dnf install -y \
   bash-completion \
   lsof \
