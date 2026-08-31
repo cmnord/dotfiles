@@ -2,17 +2,27 @@
 
 set -euo pipefail
 
-readonly DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly DOTFILES_DIR
 
 if [[ "$(uname -s)" != "Linux" || "$(uname -m)" != "x86_64" ]]; then
   echo "install-cloud supports x86_64 Linux only" >&2
   exit 1
 fi
 
-# bash-completion adds context-aware tab completion to interactive Bash.
-# zsh keeps the repository's alternative shell configuration available.
-# vim-enhanced provides the configured command-line editor.
-sudo dnf install -y bash-completion zsh vim-enhanced
+# Install the shared runtime and build dependencies used by cloud workspaces.
+# Standalone tools unavailable from Amazon Linux are installed below.
+sudo dnf install -y \
+  bash-completion \
+  docker \
+  gcc \
+  gcc-c++ \
+  lsof \
+  make \
+  mandoc \
+  vim-enhanced \
+  xz \
+  zsh
 
 cloud_install_tmp="$(mktemp -d)"
 trap 'rm -rf "$cloud_install_tmp"' EXIT
@@ -61,6 +71,39 @@ download_verified \
   "$cloud_install_tmp/zoxide.tar.gz"
 tar -xzf "$cloud_install_tmp/zoxide.tar.gz" -C "$cloud_install_tmp"
 sudo install -m 0755 "$cloud_install_tmp/zoxide" /usr/local/bin/zoxide
+
+download_verified \
+  "https://github.com/eradman/entr/archive/refs/tags/5.7.tar.gz" \
+  "90c5d943820c70cef37eb41a382a6ea4f5dd7fd95efef13b2b5520d320f5d067" \
+  "$cloud_install_tmp/entr.tar.gz"
+tar -xzf "$cloud_install_tmp/entr.tar.gz" -C "$cloud_install_tmp"
+(
+  cd "$cloud_install_tmp/entr-5.7"
+  ./configure
+  make test
+  sudo make install
+)
+
+download_verified \
+  "https://git.sr.ht/~sircmpwn/scdoc/archive/1.11.3.tar.gz" \
+  "4c5c6136540384e5455b250f768e7ca11b03fdba1a8efc2341ee0f1111e57612" \
+  "$cloud_install_tmp/scdoc.tar.gz"
+tar -xzf "$cloud_install_tmp/scdoc.tar.gz" -C "$cloud_install_tmp"
+(
+  cd "$cloud_install_tmp/scdoc-1.11.3"
+  make LDFLAGS=
+  make LDFLAGS= check
+  sudo make LDFLAGS= install
+)
+
+download_verified \
+  "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.xz" \
+  "8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198" \
+  "$cloud_install_tmp/shellcheck.tar.xz"
+tar -xJf "$cloud_install_tmp/shellcheck.tar.xz" -C "$cloud_install_tmp"
+sudo install -m 0755 \
+  "$cloud_install_tmp/shellcheck-v0.11.0/shellcheck" \
+  /usr/local/bin/shellcheck
 
 git -C "$DOTFILES_DIR" submodule sync --recursive
 git -C "$DOTFILES_DIR" submodule update --init --recursive
