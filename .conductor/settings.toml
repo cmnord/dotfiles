@@ -1,4 +1,4 @@
 "$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
 
 [scripts]
-setup = 'if [[ "${CONDUCTOR_IS_LOCAL:-}" == "0" ]]; then bash install-cloud; fi'
+setup = 'if [[ "$(uname -s)" == "Linux" ]]; then bash install-cloud; fi'
