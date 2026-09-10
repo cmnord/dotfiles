@@ -12,9 +12,8 @@
 #     so all commits live in the parent repo's .git) AND nothing inside was
 #     modified in the last GRACE_DAYS.
 #   - Any other checkout is deleted only when git proves it holds nothing
-#     unique: no .git, a .git with zero commits, or a clean tree whose every
-#     ref is on a remote and which holds no KEEP_IGNORED file. Otherwise it is
-#     kept, giving up only what its own .gitignore calls disposable.
+#     unique: no .git, zero commits, or a clean tree fully on a remote — and
+#     no KEEP_IGNORED file. Otherwise only its gitignored output goes.
 #   - DerivedData folders are only deleted when their WorkspacePath no longer
 #     exists on disk (pure regenerable build cache).
 #   - Live/registered worktrees and anything recently touched are never touched.
@@ -43,7 +42,7 @@ mkdir -p "$(dirname "$LOG")" 2>/dev/null
 [ -t 2 ] || exec 2>>"$LOG"
 log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*" | tee -a "$LOG"; }
 
-# Avail KB on the data volume (df field 4 on both BSD and GNU df).
+# Avail KB (df field 4 on both BSD and GNU df).
 free_kb() { df -k /System/Volumes/Data 2>/dev/null | awk 'NR==2 {print $4}'; }
 
 freed_kb=0
@@ -61,17 +60,20 @@ remove_dir() {
 # True when git proves every unique byte here also exists elsewhere: a remote
 # exists, the tree is clean, and no ref is missing from it. --all, not
 # --branches: a stash, local tag or detached HEAD holds commits no branch points
-# at, and a stash also leaves the worktree looking clean.
+# at, and a stash leaves the worktree looking clean. Submodules keep objects
+# under .git/modules that --all never walks, so a repo with one is kept.
+# Caveat: remote refs here are cached, so a branch force-pushed away on the
+# server still looks present.
 fully_pushed() {
   local d="$1" out
   [ -n "$(git -C "$d" remote 2>/dev/null)" ] || return 1
+  [ -z "$(git -C "$d" submodule status --recursive 2>/dev/null)" ] || return 1
   out=$(git -C "$d" status --porcelain 2>/dev/null) || return 1
   [ -z "$out" ] || return 1
   out=$(git -C "$d" log --all --not --remotes --format=%H 2>/dev/null) || return 1
   [ -z "$out" ]
 }
 
-# Delete what this repo's own .gitignore calls disposable, whatever it builds.
 purge_ignored() {
   local d="$1" sub
   while IFS= read -r sub; do
@@ -87,8 +89,8 @@ for d in "$WORKSPACES"/*/*/; do
   [ -d "$d" ] || continue
   d="${d%/}"
   # Skip anything with recent activity, whatever its state.
-  # .git is pruned: the git checks below refresh .git/index, which would else
-  # let one run reset every repo's idle clock.
+  # .git is pruned: the checks below refresh .git/index, which would else let
+  # one run reset every repo's idle clock.
   if [ -n "$(find "$d" -name .git -prune -o -newermt "-${GRACE_DAYS} days" -print -quit 2>/dev/null)" ]; then
     continue
   fi
@@ -137,6 +139,6 @@ if [ -n "$avail_gb" ] && [ "$avail_gb" -lt "$MIN_FREE_GB" ]; then
 fi
 
 # Report the measured df delta: pnpm hardlinks node_modules into a shared
-# store, so the summed du over-counts what the disk recovered.
+# store, so the summed du over-counts it.
 delta_kb=$(( $(free_kb) - ${free_start_kb:-0} ))
 log "=== done, freed $((delta_kb / 1024))MB measured (${avail_gb:-?}GB free; du-summed ~$((freed_kb / 1024))MB over-counts hardlinks)"
