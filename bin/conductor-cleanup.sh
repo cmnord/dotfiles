@@ -12,9 +12,9 @@
 #     so all commits live in the parent repo's .git) AND nothing inside was
 #     modified in the last GRACE_DAYS.
 #   - Any other checkout is deleted only when git proves it holds nothing
-#     unique: no .git at all, a .git with zero commits, or a clean tree whose
-#     every commit is already on a remote. Otherwise it is kept, and gives up
-#     only what its own .gitignore calls disposable, minus KEEP_IGNORED.
+#     unique: no .git, a .git with zero commits, or a clean tree whose every
+#     ref is on a remote and which holds no KEEP_IGNORED file. Otherwise it is
+#     kept, giving up only what its own .gitignore calls disposable.
 #   - DerivedData folders are only deleted when their WorkspacePath no longer
 #     exists on disk (pure regenerable build cache).
 #   - Live/registered worktrees and anything recently touched are never touched.
@@ -33,13 +33,16 @@ LOG="$HOME/Library/Logs/conductor-cleanup.log"
 DRY_RUN="${1:-}"
 
 # Gitignored but NOT regenerable — the short, stable inverse of a cache list.
-# (git clean's -e flag is no help: it *adds* ignore patterns, so -X deletes them.)
-KEEP_IGNORED='(^|/)(\.env|\.envrc|\.claude|\.direnv)|\.local'
+# (git clean's -e flag adds ignore patterns, so under -X it deletes them.)
+# Basenames only; a protected file inside a wholly-ignored dir is not seen.
+KEEP_IGNORED='(^|/)(\.env(\..*)?|\.envrc|\.claude|\.direnv|.*\.local)/?$'
+
+ignored_in() { git -C "$1" clean -Xdn 2>/dev/null | sed -n 's/^Would remove //p'; }
 
 mkdir -p "$(dirname "$LOG")" 2>/dev/null
 log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*" | tee -a "$LOG"; }
 
-# Available KB on the data volume (df field 4 is Avail on both BSD and GNU df).
+# Avail KB on the data volume (df field 4 on both BSD and GNU df).
 free_kb() { df -k /System/Volumes/Data 2>/dev/null | awk 'NR==2 {print $4}'; }
 
 freed_kb=0
@@ -54,25 +57,25 @@ remove_dir() {
   fi
 }
 
-# True when git proves every unique byte here also exists elsewhere: a remote is
-# configured, the tree is clean, and no commit is missing from that remote.
+# True when git proves every unique byte here also exists elsewhere: a remote
+# exists, the tree is clean, and no ref is missing from it. --all, not
+# --branches: a stash, local tag or detached HEAD holds commits no branch points
+# at, and a stash also leaves the worktree looking clean.
 fully_pushed() {
   local d="$1" out
-  git -C "$d" rev-parse --git-dir >/dev/null 2>&1 || return 1
   [ -n "$(git -C "$d" remote 2>/dev/null)" ] || return 1
   out=$(git -C "$d" status --porcelain 2>/dev/null) || return 1
   [ -z "$out" ] || return 1
-  out=$(git -C "$d" log --branches --not --remotes --format=%H 2>/dev/null) || return 1
+  out=$(git -C "$d" log --all --not --remotes --format=%H 2>/dev/null) || return 1
   [ -z "$out" ]
 }
 
-# Delete what this repo's own .gitignore calls disposable — node_modules, Rust
-# target/, tauri bundles, Pods, whatever *it* builds. git clean skips nested repos.
+# Delete what this repo's own .gitignore calls disposable, whatever it builds.
 purge_ignored() {
   local d="$1" sub
   while IFS= read -r sub; do
     remove_dir "$d/${sub%/}" "gitignored, regenerable"
-  done < <(git -C "$d" clean -Xdn 2>/dev/null | sed -n 's/^Would remove //p' | grep -Ev "$KEEP_IGNORED")
+  done < <(ignored_in "$d" | grep -Ev "$KEEP_IGNORED")
 }
 
 log "=== conductor-cleanup start ${DRY_RUN:+(dry run)}"
@@ -83,8 +86,8 @@ for d in "$WORKSPACES"/*/*/; do
   [ -d "$d" ] || continue
   d="${d%/}"
   # Skip anything with recent activity, whatever its state.
-  # .git is pruned: the git checks below refresh .git/index, which would
-  # otherwise let one run (or one --dry-run) reset every repo's idle clock.
+  # .git is pruned: the git checks below refresh .git/index, which would else
+  # let one run reset every repo's idle clock.
   if [ -n "$(find "$d" -name .git -prune -o -newermt "-${GRACE_DAYS} days" -print -quit 2>/dev/null)" ]; then
     continue
   fi
@@ -97,9 +100,13 @@ for d in "$WORKSPACES"/*/*/; do
     # gitdir still exists -> live registered worktree, leave it alone
   elif [ ! -e "$gitfile" ]; then
     remove_dir "$d" "stale non-git leftover"
+  # Holds a .env & co, which exists nowhere else: never removed wholesale, but
+  # still gives up its caches.
+  elif ignored_in "$d" | grep -Eq "$KEEP_IGNORED"; then
+    purge_ignored "$d"
   # A .git with zero commits (an rsynced copy, a bare `git init`) holds no
-  # history, so it protects the tree no more than having no .git at all. A git
-  # error yields "" here, not 0, so anything unreadable is kept.
+  # history, so protects the tree no more than no .git at all. A git error
+  # yields "" here, not 0, so anything unreadable is kept.
   elif [ "$(git -C "$d" rev-list --all --count 2>/dev/null)" = 0 ]; then
     remove_dir "$d" "throwaway checkout, no commits"
   elif fully_pushed "$d"; then
