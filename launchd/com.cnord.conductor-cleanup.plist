@@ -4,13 +4,18 @@
 <dict>
     <key>Label</key>
     <string>com.cnord.conductor-cleanup</string>
+    <!-- launchd does not expand $HOME or ~ in plist paths, so a hardcoded home
+         directory here breaks for every user but the author. Let bash expand
+         it. No Standard{Out,Error}Path either: the script tees to
+         $HOME/Library/Logs/conductor-cleanup.log itself. -->
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/cnord/bin/conductor-cleanup</string>
+        <string>-c</string>
+        <string>exec "$HOME/bin/conductor-cleanup.sh"</string>
     </array>
-    <!-- Daily at noon: Mac is usually awake; launchd coalesces a missed run
-         on wake, so sleep at noon just delays it rather than skipping it. -->
+    <!-- Daily at noon: Mac is usually awake, and launchd coalesces a missed run
+         on wake rather than skipping it. -->
     <key>StartCalendarInterval</key>
     <dict>
         <key>Hour</key>
@@ -18,10 +23,6 @@
         <key>Minute</key>
         <integer>0</integer>
     </dict>
-    <key>StandardOutPath</key>
-    <string>/Users/cnord/Library/Logs/conductor-cleanup.log</string>
-    <key>StandardErrorPath</key>
-    <string>/Users/cnord/Library/Logs/conductor-cleanup.log</string>
     <key>ProcessType</key>
     <string>Background</string>
 </dict>
