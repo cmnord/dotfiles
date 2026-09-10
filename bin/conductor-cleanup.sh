@@ -33,13 +33,14 @@ LOG="$HOME/Library/Logs/conductor-cleanup.log"
 DRY_RUN="${1:-}"
 
 # Gitignored but NOT regenerable — the short, stable inverse of a cache list.
-# (git clean's -e flag adds ignore patterns, so under -X it deletes them.)
 # Basenames only; a protected file inside a wholly-ignored dir is not seen.
 KEEP_IGNORED='(^|/)(\.env(\..*)?|\.envrc|\.claude|\.direnv|.*\.local)/?$'
 
 ignored_in() { git -C "$1" clean -Xdn 2>/dev/null | sed -n 's/^Would remove //p'; }
 
 mkdir -p "$(dirname "$LOG")" 2>/dev/null
+# stderr has nowhere to go under launchd, and log() tees only stdout.
+[ -t 2 ] || exec 2>>"$LOG"
 log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*" | tee -a "$LOG"; }
 
 # Avail KB on the data volume (df field 4 on both BSD and GNU df).
@@ -135,7 +136,7 @@ if [ -n "$avail_gb" ] && [ "$avail_gb" -lt "$MIN_FREE_GB" ]; then
   osascript -e "display notification \"Only ${avail_gb} GB free. Spotlight breaks when the disk fills — clear space soon.\" with title \"Low disk space\" sound name \"Basso\"" 2>/dev/null
 fi
 
-# Report the measured df delta: pnpm hardlinks node_modules into a shared store,
-# so the summed du over-counts what the disk actually recovered.
+# Report the measured df delta: pnpm hardlinks node_modules into a shared
+# store, so the summed du over-counts what the disk recovered.
 delta_kb=$(( $(free_kb) - ${free_start_kb:-0} ))
 log "=== done, freed $((delta_kb / 1024))MB measured (${avail_gb:-?}GB free; du-summed ~$((freed_kb / 1024))MB over-counts hardlinks)"
