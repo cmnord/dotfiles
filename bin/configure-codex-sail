@@ -1,0 +1,101 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [[ -z "${SAIL_CLB_API_KEY:-}" || -z "${SAIL_BASE_URL:-}" ]] &&
+  [[ "${1:-}" != "--from-varlock" ]] &&
+  command -v varlock >/dev/null 2>&1 &&
+  [[ -r "$HOME/.env.codex" ]]; then
+  exec varlock run \
+    --inject vars \
+    --filter SAIL_CLB_API_KEY,SAIL_BASE_URL \
+    -p "$HOME/.env.codex" \
+    -- "$0" --from-varlock
+fi
+
+if [[ "${1:-}" == "--from-varlock" ]]; then
+  shift
+fi
+
+if [[ -z "${SAIL_CLB_API_KEY:-}" || -z "${SAIL_BASE_URL:-}" ]]; then
+  echo "Skipping Sail Codex setup: SAIL_CLB_API_KEY and SAIL_BASE_URL are not both available from the environment or ~/.env.codex" >&2
+  exit 0
+fi
+
+codex_home="${CODEX_HOME:-$HOME/.codex}"
+mkdir -p "$codex_home"
+chmod 700 "$codex_home"
+umask 077
+
+CODEX_HOME_PATH="$codex_home" python3 <<'PY'
+import json
+import os
+import re
+from pathlib import Path
+
+codex_home = Path(os.environ["CODEX_HOME_PATH"])
+api_key = os.environ["SAIL_CLB_API_KEY"]
+base_url = os.environ["SAIL_BASE_URL"]
+
+auth_path = codex_home / "auth.json"
+auth_path.write_text(
+    json.dumps(
+        {
+            "auth_mode": "apikey",
+            "OPENAI_API_KEY": api_key,
+        },
+        indent=2,
+    )
+    + "\n"
+)
+auth_path.chmod(0o600)
+
+config_path = codex_home / "config.toml"
+lines = config_path.read_text().splitlines(keepends=True) if config_path.exists() else []
+
+# Remove a previous managed provider block and the root provider selection.
+filtered = []
+inside_sail_provider = False
+before_first_table = True
+for line in lines:
+    stripped = line.strip()
+    if stripped in {
+        "# Managed by ~/dotfiles/bin/configure-codex-sail",
+        "# Managed by ~/dotfiles/bin/configure-codex-sail-cloud",
+    }:
+        continue
+    if stripped == "[model_providers.sail]":
+        inside_sail_provider = True
+        before_first_table = False
+        continue
+    if inside_sail_provider and stripped.startswith("["):
+        inside_sail_provider = False
+    if inside_sail_provider:
+        continue
+    if before_first_table and re.match(r"^model_provider\s*=", stripped):
+        continue
+    if stripped.startswith("["):
+        before_first_table = False
+    filtered.append(line)
+
+first_table = next(
+    (index for index, line in enumerate(filtered) if line.strip().startswith("[")),
+    len(filtered),
+)
+filtered.insert(first_table, 'model_provider = "sail"\n')
+
+config = "".join(filtered).rstrip() + "\n\n"
+config += f"""# Managed by ~/dotfiles/bin/configure-codex-sail
+[model_providers.sail]
+name = "openai"
+base_url = "{base_url}"
+wire_api = "responses"
+supports_websockets = true
+requires_openai_auth = true
+"""
+config_path.write_text(config)
+config_path.chmod(0o600)
+PY
+
+unset SAIL_CLB_API_KEY SAIL_BASE_URL
+echo "Configured Codex to use Sail"
