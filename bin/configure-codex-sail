@@ -84,14 +84,14 @@ first_table = next(
 )
 filtered.insert(first_table, 'model_provider = "sail"\n')
 
-config = "".join(filtered).rstrip() + "\n\n"
+config = "".join(filtered).strip() + "\n\n"
 config += f"""# Managed by ~/dotfiles/bin/configure-codex-sail
 [model_providers.sail]
 name = "openai"
 base_url = "{base_url}"
 wire_api = "responses"
-supports_websockets = true
-requires_openai_auth = true
+env_key = "SAIL_CLB_API_KEY"
+supports_websockets = false
 """
 config_path.write_text(config)
 config_path.chmod(0o600)
