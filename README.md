@@ -14,9 +14,28 @@ It links the portable configuration without replacing Conductor's Git
 credentials and keeps Bash as the login shell.
 
 Set `SAIL_CLB_API_KEY` and `SAIL_BASE_URL` as Conductor cloud secrets. The
-bootstrap writes the key to Codex's private `~/.codex/auth.json` and points the
-Sail model provider at the endpoint, without committing either value to this
-public repository.
+bootstrap points the Sail model provider at the endpoint and has Codex read the
+key from `SAIL_CLB_API_KEY` at request time via `env_key`, without committing
+either value to this public repository.
+
+Do not rename these to `CODEX_API_KEY` or `OPENAI_BASE_URL`. Conductor reserves
+both names and refuses to pass them through as cloud environment variables.
+
+Conductor's Codex agent has to be on the **Manual** custom provider
+(Settings -> Agents -> Codex), which brokers no credential and leaves
+authentication to this configuration. It does not, however, read
+`~/.codex/auth.json` the way that setting's description suggests. Conductor
+drives `codex app-server` and only sends `account/login/start` when it holds a
+credential of its own, so a provider that relies on `requires_openai_auth` gets
+no Authorization header and every request fails with:
+
+```
+401 Unauthorized: Missing API key in Authorization header
+```
+
+`env_key` sidesteps that, at the cost of having no fallback: wherever Codex
+runs, `SAIL_CLB_API_KEY` has to be in its environment or it fails with
+`Missing environment variable` instead of reading `auth.json`.
 
 For local setup, store both through Varlock's macOS Keychain integration:
 
