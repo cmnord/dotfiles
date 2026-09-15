@@ -13,13 +13,21 @@ bash "$HOME/dotfiles/install-cloud"
 It links the portable configuration without replacing Conductor's Git
 credentials and keeps Bash as the login shell.
 
-Set `SAIL_CLB_API_KEY` and `SAIL_BASE_URL` as Conductor cloud secrets. The
-bootstrap points the Sail model provider at the endpoint and has Codex read the
-key from `SAIL_CLB_API_KEY` at request time via `env_key`, without committing
-either value to this public repository.
+Set three Conductor cloud environment variables. None of the values are
+committed to this public repository:
 
-Do not rename these to `CODEX_API_KEY` or `OPENAI_BASE_URL`. Conductor reserves
-both names and refuses to pass them through as cloud environment variables.
+- `SAIL_CLB_API_KEY` -- the Sail key. Codex reads it at request time through the
+  provider's `env_key`.
+- `SAIL_BASE_URL` -- the Sail endpoint, e.g.
+  `https://<your-box>.sail.box/backend-api/codex`. The bootstrap writes it into
+  the provider block.
+- `OPENAI_BASE_URL` -- the same endpoint a second time, and easy to miss.
+  Conductor only skips its own ChatGPT login when it sees a Codex API key or a
+  base URL, so without this every session dies before the agent starts with
+  `CODEX_AUTH_REQUIRED` / `Codex ChatGPT auth not found`.
+
+Do not name the key `CODEX_API_KEY`: Conductor reserves that name and refuses it
+as a cloud environment variable.
 
 Conductor's Codex agent has to be on the **Manual** custom provider
 (Settings -> Agents -> Codex), which brokers no credential and leaves
