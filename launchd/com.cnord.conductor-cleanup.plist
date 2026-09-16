@@ -14,6 +14,13 @@
         <string>-c</string>
         <string>exec "$HOME/bin/conductor-cleanup.sh"</string>
     </array>
+    <!-- launchd does not read shell startup files. Include both Homebrew
+         locations so docker, colima and their helpers are available. -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
     <!-- Daily at noon: Mac is usually awake, and launchd coalesces a missed run
          on wake rather than skipping it. -->
     <key>StartCalendarInterval</key>

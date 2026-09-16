@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: Check cleanup script syntax
+        run: /bin/bash -n bin/conductor-cleanup.sh
+      - name: Run all tests
+        run: python3 -B -m unittest discover -s tests -v
