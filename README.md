@@ -2,6 +2,15 @@
 
 MIT License: https://cnord.mit-license.org/
 
+## whoport
+
+`bin/whoport` is a standalone copy of
+[`cmnord/whoport` at `d268761`](https://github.com/cmnord/whoport/tree/d2687612fec585ac1c3728b2e1bebf3be52960fe).
+Keep it as a regular executable: Conductor's Mac sync mirror may lack submodule
+contents, making a tracked symlink unsafe and a submodule launcher unusable.
+Both installers link it into `~/bin`. It requires `lsof` (included on macOS and
+installed by `install-cloud`). Copy upstream changes here when updating whoport.
+
 ## Conductor cloud computer
 
 Bootstrap the cloud computer with:
