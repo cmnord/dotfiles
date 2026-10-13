@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import json
 import os
 import re
@@ -14,7 +15,7 @@ auth_path = codex_home / "auth.json"
 
 # Codex reads the key from the environment via the provider's env_key, so both
 # values are needed. Re-exec through Varlock once to resolve them.
-def require_secrets():
+def require_secrets(if_configured=False):
     api_key = os.environ.get("SAIL_CLB_API_KEY")
     base_url = os.environ.get("SAIL_BASE_URL")
     if api_key and base_url:
@@ -38,16 +39,24 @@ def require_secrets():
             ],
         )
 
+    if if_configured:
+        print(
+            "Skipping Sail Codex setup: SAIL_CLB_API_KEY and SAIL_BASE_URL are "
+            "not both available from the environment or ~/.env.codex",
+            file=sys.stderr,
+        )
+        sys.exit(0)
+
     print(
-        "Skipping Sail Codex setup: SAIL_CLB_API_KEY and SAIL_BASE_URL are "
-        "not both available from the environment or ~/.env.codex",
+        "codex-sail.py: SAIL_CLB_API_KEY and SAIL_BASE_URL are not both available\n"
+        "               from the environment or ~/.env.codex",
         file=sys.stderr,
     )
-    sys.exit(0)
+    sys.exit(1)
 
 
-def on():
-    api_key, base_url = require_secrets()
+def on(if_configured):
+    api_key, base_url = require_secrets(if_configured)
 
     codex_home.mkdir(parents=True, exist_ok=True)
     codex_home.chmod(0o700)
@@ -113,5 +122,28 @@ supports_websockets = false
     print("Configured Codex to use Sail")
 
 
+def main():
+    parser = argparse.ArgumentParser(
+        prog="codex-sail.py",
+        description="Toggle Codex between the Sail CLB provider and its own ChatGPT login.",
+    )
+    commands = parser.add_subparsers(dest="command", metavar="COMMAND", required=True)
+
+    def add_command(name, about, run):
+        command = commands.add_parser(name, help=about, description=about)
+        command.set_defaults(run=run)
+        return command
+
+    on_command = add_command("on", "point Codex at Sail", lambda args: on(args.if_configured))
+    on_command.add_argument(
+        "--if-configured",
+        action="store_true",
+        help="succeed without changes when the secrets are absent, for bootstraps",
+    )
+
+    args = parser.parse_args()
+    args.run(args)
+
+
 if __name__ == "__main__":
-    on()
+    main()

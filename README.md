@@ -50,7 +50,7 @@ For local setup, store both through Varlock's macOS Keychain integration:
 ```bash
 varlock keychain set SAIL_CLB_API_KEY --project codex --profile local
 varlock keychain set SAIL_BASE_URL --project codex --profile local
-bin/codex-sail.py
+codex-sail.py on
 ```
 
 `SAIL_BASE_URL` is the Sail box's Codex endpoint, e.g.
@@ -58,8 +58,7 @@ bin/codex-sail.py
 
 The managed `~/.env.codex` contains only `keychain(...)` references. The helper
 resolves them for the one setup process, so nothing needs to be exported into
-every development shell. If either value is missing, the helper skips Sail
-setup instead of failing the install.
+every development shell.
 
 Keep the computer install script as a thin wrapper around this entrypoint and
 rebuild the snapshot after changing it.
