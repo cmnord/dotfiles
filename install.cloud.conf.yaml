@@ -9,7 +9,6 @@
     ~/.bash:
     ~/.bash_profile:
     ~/.bashrc:
-    ~/.env.codex: env.codex
     ~/.gitignore_global:
     ~/.inputrc:
     ~/.tmux.conf:
