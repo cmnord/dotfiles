@@ -50,7 +50,7 @@ For local setup, store both through Varlock's macOS Keychain integration:
 ```bash
 varlock keychain set SAIL_CLB_API_KEY --project codex --profile local
 varlock keychain set SAIL_BASE_URL --project codex --profile local
-bin/configure-codex-sail
+bin/codex-sail.py
 ```
 
 `SAIL_BASE_URL` is the Sail box's Codex endpoint, e.g.

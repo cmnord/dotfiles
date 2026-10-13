@@ -77,7 +77,7 @@ git -C "$DOTFILES_DIR" submodule update --init --recursive
 
 # Conductor's manual provider reads its API key from Codex's auth.json.
 # The secret is injected into the cloud computer and is never stored in Git.
-"$DOTFILES_DIR/bin/configure-codex-sail"
+"$DOTFILES_DIR/bin/codex-sail.py"
 
 # Include personal preferences without replacing Conductor's credential helper.
 if ! git config --global --get-all include.path | grep -Fqx "$DOTFILES_DIR/gitconfig"; then
