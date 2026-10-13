@@ -75,9 +75,10 @@ git -C "$DOTFILES_DIR" submodule update --init --recursive
   -d "$DOTFILES_DIR" \
   -c "$DOTFILES_DIR/install.cloud.conf.yaml"
 
-# Conductor's manual provider reads its API key from Codex's auth.json.
-# The secret is injected into the cloud computer and is never stored in Git.
-"$DOTFILES_DIR/bin/configure-codex-sail"
+# Point Codex at Sail when the cloud computer carries the secrets, and leave it
+# on its default provider when it does not, rather than failing the bootstrap.
+# Run `codex-sail.py off` on the box to get off Sail while it is broken.
+"$DOTFILES_DIR/bin/codex-sail.py" on --if-configured
 
 # Include personal preferences without replacing Conductor's credential helper.
 if ! git config --global --get-all include.path | grep -Fqx "$DOTFILES_DIR/gitconfig"; then
