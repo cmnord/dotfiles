@@ -63,3 +63,24 @@ setup instead of failing the install.
 
 Keep the computer install script as a thin wrapper around this entrypoint and
 rebuild the snapshot after changing it.
+
+### Turning the Sail load balancer off
+
+Set the Conductor cloud environment variable `CODEX_LOAD_BALANCER=off`, then
+restart the workspace. The helper then removes the managed provider block, the
+root `model_provider = "sail"` line, and the API-key `auth.json` it wrote, so
+Codex falls back to Conductor's own login. Delete the variable (or set it to
+`on`) and restart to turn Sail back on.
+
+Restarting is enough because the computer install script writes
+`/etc/profile.d/codex-load-balancer.sh`, which runs this helper from the login
+shell Conductor boots every workspace with. Workspaces created before that hook
+existed also have an older helper, so update it before a one-time manual run:
+
+```bash
+git -C "$HOME/dotfiles" pull --ff-only
+CODEX_LOAD_BALANCER=off "$HOME/dotfiles/bin/configure-codex-sail"
+```
+
+If Sail is off, switch Conductor's Codex provider (Settings -> Agents -> Codex)
+away from **Manual** so Conductor brokers a credential again.

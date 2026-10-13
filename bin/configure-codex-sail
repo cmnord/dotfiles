@@ -2,7 +2,16 @@
 
 set -euo pipefail
 
-if [[ -z "${SAIL_CLB_API_KEY:-}" || -z "${SAIL_BASE_URL:-}" ]] &&
+# CODEX_LOAD_BALANCER=off removes the managed Sail provider instead of writing
+# it, so Codex falls back to Conductor's own login. Set it as a Conductor cloud
+# environment variable; the boot hook reapplies it on every workspace restart.
+case "${CODEX_LOAD_BALANCER:-on}" in
+  off | 0 | false) sail_mode=off ;;
+  *) sail_mode=on ;;
+esac
+
+if [[ "$sail_mode" == on ]] &&
+  [[ -z "${SAIL_CLB_API_KEY:-}" || -z "${SAIL_BASE_URL:-}" ]] &&
   [[ "${1:-}" != "--from-varlock" ]] &&
   command -v varlock >/dev/null 2>&1 &&
   [[ -r "$HOME/.env.codex" ]]; then
@@ -17,7 +26,8 @@ if [[ "${1:-}" == "--from-varlock" ]]; then
   shift
 fi
 
-if [[ -z "${SAIL_CLB_API_KEY:-}" || -z "${SAIL_BASE_URL:-}" ]]; then
+if [[ "$sail_mode" == on ]] &&
+  [[ -z "${SAIL_CLB_API_KEY:-}" || -z "${SAIL_BASE_URL:-}" ]]; then
   echo "Skipping Sail Codex setup: SAIL_CLB_API_KEY and SAIL_BASE_URL are not both available from the environment or ~/.env.codex" >&2
   exit 0
 fi
@@ -27,28 +37,43 @@ mkdir -p "$codex_home"
 chmod 700 "$codex_home"
 umask 077
 
-CODEX_HOME_PATH="$codex_home" python3 <<'PY'
+CODEX_HOME_PATH="$codex_home" SAIL_MODE="$sail_mode" python3 <<'PY'
 import json
 import os
 import re
 from pathlib import Path
 
 codex_home = Path(os.environ["CODEX_HOME_PATH"])
-api_key = os.environ["SAIL_CLB_API_KEY"]
-base_url = os.environ["SAIL_BASE_URL"]
+sail_mode = os.environ["SAIL_MODE"]
+api_key = os.environ.get("SAIL_CLB_API_KEY", "")
+base_url = os.environ.get("SAIL_BASE_URL", "")
 
 auth_path = codex_home / "auth.json"
-auth_path.write_text(
-    json.dumps(
-        {
-            "auth_mode": "apikey",
-            "OPENAI_API_KEY": api_key,
-        },
-        indent=2,
+if sail_mode == "on":
+    auth_path.write_text(
+        json.dumps(
+            {
+                "auth_mode": "apikey",
+                "OPENAI_API_KEY": api_key,
+            },
+            indent=2,
+        )
+        + "\n"
     )
-    + "\n"
-)
-auth_path.chmod(0o600)
+    auth_path.chmod(0o600)
+elif auth_path.exists():
+    # Only remove the API-key login this script writes, never a ChatGPT login.
+    try:
+        auth = json.loads(auth_path.read_text())
+    except ValueError:
+        auth = None
+    if (
+        isinstance(auth, dict)
+        and set(auth) == {"auth_mode", "OPENAI_API_KEY"}
+        and auth["auth_mode"] == "apikey"
+        and (not api_key or auth["OPENAI_API_KEY"] == api_key)
+    ):
+        auth_path.unlink()
 
 config_path = codex_home / "config.toml"
 lines = config_path.read_text().splitlines(keepends=True) if config_path.exists() else []
@@ -78,6 +103,10 @@ for line in lines:
         before_first_table = False
     filtered.append(line)
 
+if sail_mode == "off":
+    config_path.write_text("".join(filtered))
+    raise SystemExit(0)
+
 first_table = next(
     (index for index, line in enumerate(filtered) if line.strip().startswith("[")),
     len(filtered),
@@ -98,4 +127,8 @@ config_path.chmod(0o600)
 PY
 
 unset SAIL_CLB_API_KEY SAIL_BASE_URL
-echo "Configured Codex to use Sail"
+if [[ "$sail_mode" == off ]]; then
+  echo "Removed the Sail provider from Codex (CODEX_LOAD_BALANCER=off)"
+else
+  echo "Configured Codex to use Sail"
+fi
