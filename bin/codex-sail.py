@@ -11,6 +11,14 @@ from pathlib import Path
 codex_home = Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex")
 config_path = codex_home / "config.toml"
 auth_path = codex_home / "auth.json"
+saved_auth_path = codex_home / "auth.json.chatgpt"
+
+
+def read_auth_mode():
+    try:
+        return json.loads(auth_path.read_text()).get("auth_mode")
+    except (OSError, ValueError):
+        return None
 
 
 # Codex reads the key from the environment via the provider's env_key, so both
@@ -61,6 +69,13 @@ def on(if_configured):
     codex_home.mkdir(parents=True, exist_ok=True)
     codex_home.chmod(0o700)
     os.umask(0o077)
+
+    # Keep the ChatGPT credential so "off" can restore it without a fresh login.
+    # A ChatGPT auth.json is only ever written here, never read, so an existing
+    # copy is the newer one unless Codex has logged in again since.
+    if read_auth_mode() == "chatgpt":
+        shutil.copy2(auth_path, saved_auth_path)
+        saved_auth_path.chmod(0o600)
 
     auth_path.write_text(
         json.dumps(
@@ -119,7 +134,50 @@ supports_websockets = false
 """
     config_path.write_text(config)
     config_path.chmod(0o600)
-    print("Configured Codex to use Sail")
+    print("Codex is on Sail. Restart Codex to pick it up.")
+
+
+# Uses no secrets, Varlock, network or Keychain, so it works while any of them
+# is unavailable.
+def off():
+    # Leave [model_providers.sail] in place; only the root selection decides which
+    # provider is used. Any other provider selection is the user's own and stays.
+    removed = False
+    if config_path.exists():
+        kept = []
+        before_first_table = True
+        for line in config_path.read_text().splitlines(keepends=True):
+            stripped = line.strip()
+            if before_first_table and re.match(r'^model_provider\s*=\s*"sail"', stripped):
+                removed = True
+                continue
+            if stripped.startswith("["):
+                before_first_table = False
+            kept.append(line)
+        if removed:
+            config_path.write_text("".join(kept))
+            config_path.chmod(0o600)
+
+    auth_mode = read_auth_mode()
+
+    # Only swap credentials when this run turned Sail off. Once it is off,
+    # auth.json is whatever the user has logged in with since, so leave it alone.
+    if not removed:
+        print("Codex is already off Sail. Left auth.json as it is.")
+    elif auth_mode == "chatgpt":
+        print("Codex is off Sail, on its ChatGPT login.")
+    elif saved_auth_path.exists():
+        shutil.copy2(saved_auth_path, auth_path)
+        auth_path.chmod(0o600)
+        print("Codex is off Sail. Restored the saved ChatGPT login.")
+    else:
+        # Without a provider selection Codex sends an API-key auth.json to
+        # api.openai.com, so move the Sail key aside.
+        if auth_mode == "apikey":
+            auth_path.replace(codex_home / "auth.json.sail")
+        print("Codex is off Sail, but no saved ChatGPT login was found.")
+        print("Run `codex login` if Codex reports missing credentials.")
+    print("Restart Codex to pick it up.")
 
 
 def main():
@@ -133,6 +191,8 @@ def main():
         command = commands.add_parser(name, help=about, description=about)
         command.set_defaults(run=run)
         return command
+
+    add_command("off", "fall back to the ChatGPT login", lambda args: off())
 
     on_command = add_command("on", "point Codex at Sail", lambda args: on(args.if_configured))
     on_command.add_argument(

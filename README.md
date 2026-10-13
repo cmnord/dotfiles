@@ -60,5 +60,9 @@ The managed `~/.env.codex` contains only `keychain(...)` references. The helper
 resolves them for the one setup process, so nothing needs to be exported into
 every development shell.
 
+### Turning Sail off when it breaks
+
+Run `codex-sail.py off`, then restart Codex.
+
 Keep the computer install script as a thin wrapper around this entrypoint and
 rebuild the snapshot after changing it.
