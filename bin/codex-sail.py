@@ -5,7 +5,10 @@ import json
 import os
 import re
 import shutil
+import signal
 import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 codex_home = Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex")
@@ -180,6 +183,95 @@ def off():
     print("Restart Codex to pick it up.")
 
 
+def status():
+    provider = None
+    base_url = None
+    if config_path.exists():
+        before_first_table = True
+        inside_sail_provider = False
+        for line in config_path.read_text().splitlines():
+            stripped = line.strip()
+            if stripped == "[model_providers.sail]":
+                inside_sail_provider = True
+                before_first_table = False
+                continue
+            if stripped.startswith("["):
+                inside_sail_provider = False
+                before_first_table = False
+                continue
+            if before_first_table:
+                match = re.match(r'^model_provider\s*=\s*"([^"]*)"', stripped)
+                if match:
+                    provider = match.group(1)
+            if inside_sail_provider:
+                match = re.match(r'^base_url\s*=\s*"([^"]*)"', stripped)
+                if match:
+                    base_url = match.group(1)
+
+    auth_mode = read_auth_mode()
+
+    print("Sail:      " + ("ON" if provider == "sail" else "off"))
+    print("provider:  " + (provider or "(default)"))
+    print("auth_mode: " + (auth_mode or "(unreadable)"))
+    if base_url:
+        print("endpoint:  " + base_url)
+    if saved_auth_path.exists():
+        print("saved ChatGPT login available for `codex-sail.py off`")
+    elif provider == "sail":
+        print("no saved ChatGPT login: `codex-sail.py off` will need `codex login`")
+
+
+def probe(timeout_seconds, model):
+    api_key, base_url = require_secrets()
+
+    # The endpoint rejects non-streaming requests, and a down backend returns 200
+    # and then sends keepalives without closing, so only a completed stream
+    # counts as up. Keepalives also reset a socket timeout, so an alarm bounds
+    # the whole request.
+    request = urllib.request.Request(
+        base_url.rstrip("/") + "/responses",
+        data=json.dumps({"model": model, "input": "hi", "stream": True}).encode(),
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+    )
+
+    def give_up(signum, frame):
+        raise TimeoutError(f"no completion within {timeout_seconds}s")
+
+    response = ""
+    signal.signal(signal.SIGALRM, give_up)
+    signal.alarm(timeout_seconds)
+    try:
+        with urllib.request.urlopen(request) as stream:
+            for line in stream:
+                response += line.decode(errors="replace")
+                if '"type":"response.completed"' in response:
+                    break
+    except urllib.error.HTTPError as error:
+        response = error.read().decode(errors="replace")
+    except (OSError, TimeoutError):
+        pass
+    finally:
+        signal.alarm(0)
+
+    if '"type":"response.completed"' in response:
+        print("Sail is UP (completed a streamed response)")
+        return
+
+    if not response:
+        print(f"Sail is DOWN (no response within {timeout_seconds}s)", file=sys.stderr)
+    elif "codex.keepalive" in response:
+        print("Sail is DOWN (stream opened, only keepalives, never completed)", file=sys.stderr)
+    else:
+        print("Sail is DOWN (unexpected response):", file=sys.stderr)
+        redacted = re.sub(r"sk-[A-Za-z0-9_-]+", "sk-REDACTED", response)
+        print("\n".join(redacted.splitlines()[:5]), file=sys.stderr)
+    print("Run `codex-sail.py off` to fall back to the ChatGPT login.", file=sys.stderr)
+    sys.exit(1)
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="codex-sail.py",
@@ -191,6 +283,26 @@ def main():
         command = commands.add_parser(name, help=about, description=about)
         command.set_defaults(run=run)
         return command
+
+    add_command("status", "show which provider is active, and the endpoint", lambda args: status())
+
+    probe_command = add_command(
+        "probe",
+        "ask the endpoint for a real completion",
+        lambda args: probe(args.timeout, args.model),
+    )
+    probe_command.add_argument(
+        "--timeout",
+        type=int,
+        default=os.environ.get("CODEX_SAIL_PROBE_TIMEOUT", "25"),
+        metavar="SECONDS",
+        help="give up after this long (default: %(default)s, or $CODEX_SAIL_PROBE_TIMEOUT)",
+    )
+    probe_command.add_argument(
+        "--model",
+        default=os.environ.get("CODEX_SAIL_PROBE_MODEL", "gpt-6-luna"),
+        help="model to ask (default: %(default)s, or $CODEX_SAIL_PROBE_MODEL)",
+    )
 
     add_command("off", "fall back to the ChatGPT login", lambda args: off())
 
