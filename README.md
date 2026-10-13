@@ -62,7 +62,8 @@ every development shell.
 
 ### Turning Sail off when it breaks
 
-Run `codex-sail.py off`, then restart Codex.
+Run `codex-sail.py off`, then restart Codex. `codex-sail.py help` covers the
+other subcommands and the extra steps a cloud computer needs.
 
 Keep the computer install script as a thin wrapper around this entrypoint and
 rebuild the snapshot after changing it.

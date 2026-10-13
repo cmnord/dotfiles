@@ -1,4 +1,32 @@
 #!/usr/bin/env python3
+"""Toggle Codex between the Sail CLB provider and its own ChatGPT login.
+
+examples:
+  codex-sail.py status                   which provider is Codex using?
+  codex-sail.py probe || codex-sail.py off
+                                         get off Sail if it is down
+
+When the Sail endpoint is down, TLS completes and the response stream opens,
+but only codex.keepalive events arrive and never a completion. Codex waits on
+the stream indefinitely.
+
+"off" takes no arguments, reads no secrets, and uses neither Varlock, the
+Keychain nor the network. It removes the root model_provider = "sail" line
+and restores the ChatGPT auth.json that "on" saved to auth.json.chatgpt.
+With no saved login it moves the Sail key to auth.json.sail, because Codex
+would otherwise send it to api.openai.com. The [model_providers.sail] block
+stays in config.toml; "on" still needs both secrets, from the environment or
+the Keychain. Restart Codex after either command.
+
+"probe" reports up only when the endpoint completes a streamed response,
+because a down endpoint still returns 200 and then sends keepalives.
+
+On a cloud computer "off" leaves Codex with no credential at all, since
+there is no ChatGPT login there to fall back to. To keep working through an
+outage there, also switch Conductor's Codex provider away from Manual and
+remove the OPENAI_BASE_URL cloud environment variable, so Conductor brokers
+its own ChatGPT login again. Reverse both when Sail is back.
+"""
 
 import argparse
 import json
@@ -273,9 +301,12 @@ def probe(timeout_seconds, model):
 
 
 def main():
+    summary, _, details = __doc__.strip().partition("\n\n")
     parser = argparse.ArgumentParser(
         prog="codex-sail.py",
-        description="Toggle Codex between the Sail CLB provider and its own ChatGPT login.",
+        description=summary,
+        epilog=details,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     commands = parser.add_subparsers(dest="command", metavar="COMMAND", required=True)
 
@@ -311,6 +342,15 @@ def main():
         "--if-configured",
         action="store_true",
         help="succeed without changes when the secrets are absent, for bootstraps",
+    )
+
+    help_command = add_command(
+        "help",
+        "show help for a command",
+        lambda args: (commands.choices[args.topic] if args.topic else parser).print_help(),
+    )
+    help_command.add_argument(
+        "topic", nargs="?", choices=["status", "probe", "off", "on"], metavar="COMMAND"
     )
 
     args = parser.parse_args()
