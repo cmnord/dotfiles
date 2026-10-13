@@ -53,7 +53,9 @@ def read_auth_mode():
 
 
 # Codex reads the key from the environment via the provider's env_key, so both
-# values are needed. Re-exec through Varlock once to resolve them.
+# values are needed. Re-exec through Varlock once to resolve them;
+# ~/.env.codex holds only keychain(...) references, so nothing has to be
+# exported into every shell.
 def require_secrets(if_configured=False):
     api_key = os.environ.get("SAIL_CLB_API_KEY")
     base_url = os.environ.get("SAIL_BASE_URL")
@@ -154,6 +156,10 @@ def on(if_configured):
     )
     filtered.insert(first_table, 'model_provider = "sail"\n')
 
+    # Conductor's Manual provider never logs Codex in, so a provider relying on
+    # requires_openai_auth sends no Authorization header and gets a 401. env_key
+    # reads the key from Codex's environment instead, with no auth.json fallback:
+    # SAIL_CLB_API_KEY has to be set wherever Codex runs.
     config = "".join(filtered).strip() + "\n\n"
     config += f"""# Managed by ~/dotfiles/bin/codex-sail.py
 [model_providers.sail]
